@@ -1,0 +1,925 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Neiro — Maquette</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0B0B14;
+    --surface:#17161F;
+    --surface-alt:#211F2C;
+    --border:#2B293A;
+    --text:#F5F3FF;
+    --text-muted:#8D89A0;
+    --accent-hot:#FF3D68;
+    --accent-amber:#FFC857;
+    --accent-violet:#8B7CFA;
+    --accent-teal:#2DD4BF;
+    --display: 'Anton', sans-serif;
+    --body: 'Space Grotesk', sans-serif;
+    --mono: 'IBM Plex Mono', monospace;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{
+    background:
+      radial-gradient(circle at 15% 10%, rgba(139,124,250,0.20), transparent 40%),
+      radial-gradient(circle at 85% 85%, rgba(255,61,104,0.16), transparent 45%),
+      var(--bg);
+    min-height:100vh;
+    font-family:var(--body);
+    color:var(--text);
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    padding:40px 16px;
+    gap:24px;
+  }
+  @media (prefers-reduced-motion: reduce){ *{animation:none !important; transition:none !important;} }
+
+  .intro{max-width:390px; text-align:center; color:var(--text-muted); font-size:13px; line-height:1.5;}
+  .intro b{color:var(--text);}
+
+  .phone{
+    width:390px; height:844px; background:#000; border-radius:52px; padding:14px; position:relative;
+    box-shadow:0 0 0 2px #2A2836, 0 40px 80px rgba(0,0,0,0.6), 0 0 120px rgba(139,124,250,0.08);
+  }
+  .phone::before{
+    content:""; position:absolute; top:14px; left:50%; transform:translateX(-50%);
+    width:120px; height:26px; background:#000; border-radius:0 0 18px 18px; z-index:20;
+  }
+  .screen{width:100%; height:100%; background:var(--surface); border-radius:38px; overflow:hidden; position:relative; display:flex; flex-direction:column;}
+
+  .app-view{flex:1; overflow-y:auto; display:none; padding:56px 20px 100px;}
+  .app-view.active{display:block;}
+  .app-view::-webkit-scrollbar{display:none;}
+  .app-view.no-nav-pad{padding-bottom:40px;}
+
+  .view-header{display:flex; align-items:center; justify-content:space-between; margin-bottom:18px;}
+  .logo{font-family:var(--display); font-size:26px; letter-spacing:1px; background:linear-gradient(90deg, var(--accent-hot), var(--accent-amber)); -webkit-background-clip:text; background-clip:text; color:transparent;}
+  .logo-sub{font-size:11px; color:var(--text-muted); margin-top:-4px;}
+  .avatar{width:36px; height:36px; border-radius:50%; background:linear-gradient(135deg, var(--accent-violet), var(--accent-hot)); display:flex; align-items:center; justify-content:center; font-family:var(--display); font-size:13px; flex-shrink:0;}
+  .page-title{font-family:var(--display); font-size:30px; letter-spacing:0.5px; margin-bottom:2px;}
+  .page-sub{font-size:12px; color:var(--text-muted); margin-bottom:18px;}
+  .back-row{display:flex; align-items:center; gap:10px; margin-bottom:14px;}
+  .back-btn{width:32px;height:32px;border-radius:10px;background:var(--surface-alt);display:flex;align-items:center;justify-content:center;border:1px solid var(--border);cursor:pointer; flex-shrink:0;}
+  .back-btn:focus-visible{outline:2px solid var(--accent-violet);}
+
+  .stat-row{display:flex; gap:10px; margin-bottom:24px;}
+  .stat-chip{flex:1; background:var(--surface-alt); border:1px solid var(--border); border-radius:16px; padding:12px 10px; text-align:center;}
+  .stat-chip .num{font-family:var(--display); font-size:22px; line-height:1; color:var(--accent-amber);}
+  .stat-chip .lbl{font-size:10px; color:var(--text-muted); margin-top:4px; text-transform:uppercase; letter-spacing:0.5px;}
+
+  .section-title{font-size:12px; text-transform:uppercase; letter-spacing:1.2px; color:var(--text-muted); margin:22px 0 12px; font-weight:600; display:flex; justify-content:space-between; align-items:center;}
+  .section-title:first-of-type{margin-top:0;}
+  .section-title .link{color:var(--accent-violet); text-transform:none; letter-spacing:0; font-weight:600; cursor:pointer;}
+
+  /* ---- ticket stub ---- */
+  .stub{position:relative; background:var(--surface-alt); border:1px solid var(--border); border-radius:18px; padding:16px 18px; margin-bottom:16px; display:flex; gap:14px; align-items:center; overflow:visible; cursor:pointer;}
+  .stub:nth-child(odd){transform:rotate(-0.6deg);}
+  .stub:nth-child(even){transform:rotate(0.5deg);}
+  .stub::before, .stub::after{content:""; position:absolute; width:16px; height:16px; background:var(--surface); border-radius:50%; top:50%; transform:translateY(-50%);}
+  .stub::before{left:-8px;} .stub::after{right:-8px;}
+  .stub-dash{position:absolute; left:64px; top:8px; bottom:8px; border-left:2px dashed var(--border);}
+  .stub-color{width:6px; align-self:stretch; border-radius:4px; flex-shrink:0;}
+  .stub-body{flex:1; padding-left:14px; min-width:0;}
+  .stub-artist{font-family:var(--display); font-size:17px; letter-spacing:0.3px; line-height:1.1;}
+  .stub-venue{font-size:12px; color:var(--text-muted); margin-top:3px;}
+  .stub-meta{display:flex; align-items:center; gap:8px; margin-top:8px; flex-wrap:wrap;}
+  .genre-tag{font-size:9px; text-transform:uppercase; letter-spacing:0.5px; padding:3px 8px; border-radius:20px; font-weight:600;}
+  .date-mono{font-family:var(--mono); font-size:10px; color:var(--text-muted);}
+  .stars{font-size:12px; color:var(--accent-amber); letter-spacing:1px;}
+  .stub-right{display:flex; flex-direction:column; align-items:flex-end; gap:6px; flex-shrink:0;}
+  .mini-avatars{display:flex;}
+  .mini-avatar{width:18px; height:18px; border-radius:50%; border:2px solid var(--surface-alt); margin-left:-6px; font-family:var(--body); font-weight:700; font-size:8px; display:flex; align-items:center; justify-content:center; color:#fff;}
+  .mini-avatar:first-child{margin-left:0;}
+
+  .filter-row{display:flex; gap:8px; margin-bottom:20px;}
+  .filter-chip{font-size:11px; padding:7px 13px; border-radius:20px; background:var(--surface-alt); border:1px solid var(--border); color:var(--text-muted);}
+  .filter-chip.active{background:var(--accent-violet); color:#fff; border-color:var(--accent-violet);}
+
+  .rank-row{display:flex; align-items:center; gap:14px; padding:14px 4px; border-bottom:1px solid var(--border);}
+  .rank-row:last-child{border-bottom:none;}
+  .rank-num{font-family:var(--display); font-size:26px; width:38px; flex-shrink:0; color:var(--border);}
+  .rank-row.top1 .rank-num{color:var(--accent-amber);}
+  .rank-row.top2 .rank-num{color:#C9C4DA;}
+  .rank-row.top3 .rank-num{color:#D08A5C;}
+  .rank-info{flex:1; min-width:0;}
+  .rank-artist{font-weight:600; font-size:14px;}
+  .rank-venue{font-size:11px; color:var(--text-muted); margin-top:2px;}
+  .rank-score{font-family:var(--mono); font-size:15px; color:var(--accent-amber); display:flex; flex-direction:column; align-items:flex-end;}
+  .rank-score .stars{margin-top:2px;}
+
+  /* ---- wallet ---- */
+  .wallet-card{position:relative; background:linear-gradient(135deg, var(--surface-alt), #262436); border:1px solid var(--border); border-radius:20px; padding:18px; margin-bottom:18px;}
+  .wallet-top{display:flex; justify-content:space-between; align-items:flex-start;}
+  .wallet-artist{font-family:var(--display); font-size:19px;}
+  .wallet-venue{font-size:12px; color:var(--text-muted); margin-top:2px;}
+  .qr{width:46px; height:46px; border-radius:8px; flex-shrink:0; background:repeating-linear-gradient(90deg, var(--text) 0 4px, transparent 4px 8px), repeating-linear-gradient(0deg, var(--text) 0 4px, transparent 4px 8px); background-blend-mode:screen; opacity:0.85;}
+  .wallet-tear{border-top:2px dashed var(--border); margin:14px 0; position:relative;}
+  .wallet-tear::before, .wallet-tear::after{content:""; position:absolute; top:-9px; width:18px; height:18px; background:var(--surface); border-radius:50%;}
+  .wallet-tear::before{left:-18px;} .wallet-tear::after{right:-18px;}
+  .wallet-bottom{display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;}
+  .wallet-date{font-family:var(--mono); font-size:11px; color:var(--text-muted);}
+  .wallet-cat{font-size:10px; padding:4px 10px; border-radius:20px; background:rgba(255,200,87,0.15); color:var(--accent-amber); font-weight:600;}
+  .wallet-foot{display:flex; justify-content:space-between; align-items:center;}
+  .countdown{font-family:var(--mono); font-size:11px; color:var(--accent-hot); font-weight:600;}
+  .foot-right{display:flex; align-items:center; gap:10px;}
+  .offline-badge{font-size:10px; color:var(--accent-teal); display:flex; align-items:center; gap:4px;}
+  .bell{width:26px; height:26px; border-radius:8px; background:var(--surface); border:1px solid var(--border); display:flex; align-items:center; justify-content:center; cursor:pointer;}
+  .bell.on{background:rgba(255,200,87,0.18); border-color:var(--accent-amber);}
+  .bell svg{stroke:var(--text-muted);}
+  .bell.on svg{stroke:var(--accent-amber);}
+
+  /* ---- form ---- */
+  .field{margin-bottom:16px;}
+  .field label{font-size:11px; text-transform:uppercase; letter-spacing:0.6px; color:var(--text-muted); display:block; margin-bottom:6px;}
+  .field input, .field textarea{width:100%; background:var(--surface-alt); border:1px solid var(--border); border-radius:12px; padding:12px 14px; color:var(--text); font-family:var(--body); font-size:14px;}
+  .field input:focus, .field textarea:focus{outline:2px solid var(--accent-violet); outline-offset:1px;}
+  .field textarea{resize:none; height:60px;}
+  .genre-picker{display:flex; gap:8px; flex-wrap:wrap;}
+  .genre-picker span{font-size:11px; padding:8px 12px; border-radius:20px; background:var(--surface-alt); border:1px solid var(--border); color:var(--text-muted); cursor:pointer;}
+  .genre-picker span.sel{background:var(--accent-violet); color:#fff; border-color:var(--accent-violet);}
+  .criteria-row{display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;}
+  .criteria-lbl{font-size:12px; color:var(--text-muted); width:70px; flex-shrink:0;}
+  .star-picker{display:flex; gap:4px; font-size:19px; color:var(--border); cursor:pointer;}
+  .star-picker span.sel{color:var(--accent-amber);}
+  .chip-input{display:flex; flex-wrap:wrap; gap:6px; background:var(--surface-alt); border:1px solid var(--border); border-radius:12px; padding:10px 12px;}
+  .tag-chip{font-size:11px; padding:5px 10px; border-radius:20px; background:var(--surface); border:1px solid var(--border); display:flex; align-items:center; gap:5px;}
+  .tag-chip.person{background:rgba(139,124,250,0.16); border-color:var(--accent-violet); color:var(--accent-violet);}
+  .tag-chip .x{opacity:0.6; font-size:10px;}
+  .chip-add{font-size:11px; color:var(--text-muted); padding:5px 10px; cursor:pointer;}
+  .save-btn{width:100%; padding:15px; border-radius:14px; border:none; background:linear-gradient(90deg, var(--accent-hot), var(--accent-amber)); color:#17101a; font-family:var(--display); font-size:15px; letter-spacing:0.5px; cursor:pointer; margin-top:6px;}
+  .save-btn:focus-visible{outline:3px solid #fff; outline-offset:2px;}
+
+  /* ---- profile ---- */
+  .profile-head{display:flex; align-items:center; gap:14px; margin-bottom:22px;}
+  .profile-avatar{width:60px; height:60px; border-radius:50%; background:linear-gradient(135deg, var(--accent-violet), var(--accent-hot)); display:flex; align-items:center; justify-content:center; font-family:var(--display); font-size:20px;}
+  .profile-name{font-family:var(--display); font-size:19px;}
+  .profile-tag{font-size:12px; color:var(--text-muted);}
+  .grid-stats{display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:24px;}
+  .grid-stat{background:var(--surface-alt); border:1px solid var(--border); border-radius:16px; padding:14px;}
+  .grid-stat .num{font-family:var(--display); font-size:24px;}
+  .grid-stat .lbl{font-size:10px; color:var(--text-muted); text-transform:uppercase; margin-top:3px;}
+
+  .wrapped-cta{
+    background:linear-gradient(120deg, var(--accent-violet), var(--accent-hot) 60%, var(--accent-amber));
+    border-radius:18px; padding:18px; margin-bottom:24px; cursor:pointer; position:relative; overflow:hidden;
+  }
+  .wrapped-cta .k{font-size:11px; text-transform:uppercase; letter-spacing:1px; opacity:0.85;}
+  .wrapped-cta .t{font-family:var(--display); font-size:22px; margin-top:4px;}
+  .wrapped-cta .s{font-size:11px; opacity:0.85; margin-top:6px;}
+
+  .bars{display:flex; align-items:flex-end; gap:14px; height:100px; margin-bottom:6px; padding:0 6px;}
+  .bar-col{flex:1; display:flex; flex-direction:column; align-items:center; gap:6px;}
+  .bar{width:100%; border-radius:6px 6px 0 0; background:linear-gradient(180deg, var(--accent-violet), var(--accent-hot));}
+  .bar-yr{font-size:10px; color:var(--text-muted); font-family:var(--mono);}
+
+  .badge-grid{display:grid; grid-template-columns:1fr 1fr; gap:10px;}
+  .badge{background:var(--surface-alt); border:1px solid var(--border); border-radius:14px; padding:12px; text-align:center;}
+  .badge .ic{font-size:22px;}
+  .badge .t{font-size:11px; font-weight:600; margin-top:6px; line-height:1.25;}
+  .badge.locked{opacity:0.35; border-style:dashed;}
+
+  .record-row{display:flex; gap:12px; padding:12px 0; border-bottom:1px solid var(--border); align-items:center;}
+  .record-row:last-child{border-bottom:none;}
+  .record-ic{font-size:18px; width:26px; text-align:center; flex-shrink:0;}
+  .record-t{font-size:12.5px; line-height:1.35;}
+  .record-t b{color:var(--accent-amber); font-weight:700;}
+
+  .heat-wrap{display:flex; flex-wrap:wrap; gap:8px;}
+  .heat-chip{padding:8px 12px; border-radius:20px; font-family:var(--mono); font-size:11px; border:1px solid var(--border);}
+
+  .settings-item{display:flex; justify-content:space-between; align-items:center; padding:14px 4px; border-bottom:1px solid var(--border); font-size:13px;}
+  .settings-item:last-child{border-bottom:none;}
+  .settings-item .arrow{color:var(--text-muted);}
+
+  /* ---- search / friends ---- */
+  .icon-btn{width:36px; height:36px; border-radius:12px; background:var(--surface-alt); border:1px solid var(--border); display:flex; align-items:center; justify-content:center; cursor:pointer; flex-shrink:0;}
+  .icon-btn:focus-visible{outline:2px solid var(--accent-violet);}
+  .search-input-wrap{position:relative; margin-bottom:22px;}
+  .search-input-wrap svg{position:absolute; left:14px; top:50%; transform:translateY(-50%); stroke:var(--text-muted);}
+  .search-input-wrap input{width:100%; background:var(--surface-alt); border:1px solid var(--border); border-radius:14px; padding:13px 14px 13px 40px; color:var(--text); font-family:var(--body); font-size:14px;}
+  .search-input-wrap input:focus{outline:2px solid var(--accent-violet);}
+  .profile-row{display:flex; align-items:center; gap:12px; padding:11px 0; border-bottom:1px solid var(--border);}
+  .profile-row:last-child{border-bottom:none;}
+  .pr-avatar{width:40px; height:40px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-family:var(--display); font-size:13px; flex-shrink:0;}
+  .pr-info{flex:1; min-width:0;}
+  .pr-name{font-size:13.5px; font-weight:600;}
+  .pr-sub{font-size:11px; color:var(--text-muted); margin-top:1px;}
+  .friend-btn{
+    font-size:11px; font-weight:600; padding:8px 13px; border-radius:20px; cursor:pointer; flex-shrink:0;
+    background:transparent; border:1px solid var(--accent-violet); color:var(--accent-violet);
+  }
+  .friend-btn.pending{border-color:var(--border); color:var(--text-muted);}
+  .friend-btn.friend{background:rgba(45,212,191,0.15); border-color:var(--accent-teal); color:var(--accent-teal);}
+  .friend-btn:focus-visible{outline:2px solid var(--accent-violet); outline-offset:2px;}
+
+  /* ---- segmented toggle ---- */
+  .segmented{display:flex; background:var(--surface-alt); border:1px solid var(--border); border-radius:14px; padding:4px; margin-bottom:20px;}
+  .segmented button{flex:1; border:none; background:none; color:var(--text-muted); font-family:var(--body); font-size:12px; font-weight:600; padding:9px 0; border-radius:10px; cursor:pointer;}
+  .segmented button.active{background:var(--accent-violet); color:#fff;}
+  .segmented button:focus-visible{outline:2px solid var(--accent-violet);}
+
+  /* ---- friend leaderboard ---- */
+  .fl-row{display:flex; align-items:center; gap:12px; padding:12px 4px; border-bottom:1px solid var(--border);}
+  .fl-row:last-child{border-bottom:none;}
+  .fl-row.me{background:rgba(255,200,87,0.08); border-radius:12px; padding:12px 10px;}
+  .fl-num{font-family:var(--display); font-size:18px; width:24px; color:var(--text-muted); flex-shrink:0;}
+  .fl-row:first-child .fl-num{color:var(--accent-amber);}
+  .fl-avatar{width:32px; height:32px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-family:var(--display); font-size:11px; flex-shrink:0;}
+  .fl-info{flex:1;}
+  .fl-name{font-size:13px; font-weight:600;}
+  .fl-name .you{color:var(--accent-amber); font-weight:400; font-size:10px; margin-left:4px;}
+  .fl-count{font-family:var(--mono); font-size:13px; color:var(--accent-amber);}
+
+  /* ---- scan ticket ---- */
+  .scan-viewfinder{
+    aspect-ratio:4/3; border-radius:18px; border:2px dashed var(--accent-violet);
+    background:linear-gradient(160deg, rgba(139,124,250,0.14), rgba(255,61,104,0.10));
+    display:flex; flex-direction:column; align-items:center; justify-content:center; gap:10px; margin-bottom:18px; text-align:center; padding:20px;
+  }
+  .scan-viewfinder .hint{font-size:12px; color:var(--text-muted); max-width:220px;}
+  .scan-btn-row{display:flex; gap:10px; margin-bottom:22px;}
+  .scan-secondary{flex:1; padding:13px; border-radius:12px; background:var(--surface-alt); border:1px solid var(--border); color:var(--text); font-family:var(--body); font-size:12.5px; text-align:center; cursor:pointer;}
+  .scan-primary{flex:1; padding:13px; border-radius:12px; background:var(--accent-violet); border:none; color:#fff; font-family:var(--body); font-weight:600; font-size:12.5px; text-align:center; cursor:pointer;}
+  .detected-card{background:var(--surface-alt); border:1px solid var(--accent-teal); border-radius:16px; padding:16px; margin-bottom:18px;}
+  .detected-head{display:flex; align-items:center; gap:8px; font-size:11px; color:var(--accent-teal); font-weight:600; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:12px;}
+  .detected-row{display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid var(--border); font-size:13px;}
+  .detected-row:last-child{border-bottom:none;}
+  .detected-row .k{color:var(--text-muted);}
+
+  /* ---- avant / après ---- */
+  .ap-grid{display:grid; grid-template-columns:1fr 1fr; gap:10px;}
+  .ap-box{border-radius:14px; padding:12px; font-size:12px; line-height:1.4;}
+  .ap-box.avant{background:rgba(139,124,250,0.12); border:1px solid var(--accent-violet);}
+  .ap-box.apres{background:rgba(255,200,87,0.12); border:1px solid var(--accent-amber);}
+  .ap-box .k{font-size:10px; text-transform:uppercase; letter-spacing:0.5px; font-weight:700; margin-bottom:6px;}
+  .ap-box.avant .k{color:var(--accent-violet);}
+  .ap-box.apres .k{color:var(--accent-amber);}
+  .expect-field{margin-top:12px; display:flex; gap:8px; align-items:center;}
+  .expect-field input{flex:1; background:var(--surface); border:1px solid var(--border); border-radius:10px; padding:9px 11px; color:var(--text); font-family:var(--body); font-size:11.5px;}
+  .expect-field input:focus{outline:2px solid var(--accent-violet);}
+  .expect-save{width:30px; height:30px; border-radius:9px; background:var(--accent-violet); border:none; display:flex; align-items:center; justify-content:center; flex-shrink:0; cursor:pointer;}
+
+  /* ---- timeline ---- */
+  .tl-year{font-family:var(--display); font-size:20px; margin:22px 0 14px; position:relative;}
+  .tl-year:first-child{margin-top:0;}
+  .tl-track{position:relative; padding-left:22px;}
+  .tl-track::before{content:""; position:absolute; left:5px; top:4px; bottom:4px; width:2px; background:var(--border);}
+  .tl-item{position:relative; padding-bottom:20px;}
+  .tl-item:last-child{padding-bottom:0;}
+  .tl-dot{position:absolute; left:-22px; top:3px; width:12px; height:12px; border-radius:50%; border:2px solid var(--surface);}
+  .tl-artist{font-size:13.5px; font-weight:700;}
+  .tl-sub{font-size:11px; color:var(--text-muted); margin-top:2px;}
+
+  /* ---- concert detail ---- */
+  .detail-cover{height:120px; border-radius:18px; background:linear-gradient(135deg, var(--accent-violet), var(--accent-hot)); margin-bottom:16px; display:flex; align-items:flex-end; padding:14px; position:relative;}
+  .detail-cover .t{font-family:var(--display); font-size:24px;}
+  .detail-cover .v{font-size:11px; opacity:0.85; margin-top:2px;}
+  .crit-grid{display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:20px;}
+  .crit-box{background:var(--surface-alt); border:1px solid var(--border); border-radius:14px; padding:12px;}
+  .crit-box .lbl{font-size:10px; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.5px;}
+  .crit-box .val{font-family:var(--display); font-size:20px; margin-top:4px; color:var(--accent-amber);}
+  .song-row{display:flex; align-items:center; gap:10px; padding:9px 0; border-bottom:1px solid var(--border); font-size:13px;}
+  .song-row:last-child{border-bottom:none;}
+  .song-num{font-family:var(--mono); font-size:11px; color:var(--text-muted); width:18px;}
+  .companion-row{display:flex; align-items:center; gap:10px; padding:10px 0; cursor:pointer;}
+  .comp-name{font-size:13px; font-weight:600;}
+  .comp-sub{font-size:10.5px; color:var(--text-muted);}
+  .photo-grid{display:grid; grid-template-columns:1fr 1fr 1fr; gap:6px;}
+  .photo-ph{aspect-ratio:1; border-radius:10px;}
+
+  /* ---- wrapped ---- */
+  .wrapped-view{background:linear-gradient(160deg, #241E3D, #17161F 60%);}
+  .wrapped-hero{font-family:var(--display); font-size:34px; line-height:1.05; margin:10px 0 6px;}
+  .wrapped-block{margin-bottom:22px;}
+  .wrapped-num{font-family:var(--display); font-size:52px; background:linear-gradient(90deg, var(--accent-hot), var(--accent-amber)); -webkit-background-clip:text; background-clip:text; color:transparent; line-height:1;}
+  .wrapped-lbl{font-size:12px; color:var(--text-muted); margin-top:4px;}
+  .wrapped-line{font-size:13px; margin-top:14px; padding-top:14px; border-top:1px solid var(--border);}
+  .wrapped-line b{color:var(--accent-amber);}
+
+  .fab{position:absolute; right:20px; bottom:82px; z-index:10; width:56px; height:56px; border-radius:16px; background:linear-gradient(135deg, var(--accent-hot), var(--accent-amber)); display:flex; align-items:center; justify-content:center; box-shadow:0 8px 24px rgba(255,61,104,0.4); cursor:pointer; border:none; transform:rotate(-3deg);}
+  .fab svg{stroke:#1a1220;}
+
+  .navbar{position:absolute; bottom:0; left:0; right:0; height:78px; background:rgba(23,22,31,0.88); backdrop-filter:blur(12px); border-top:1px solid var(--border); display:flex; padding-bottom:14px; z-index:10;}
+  .navbtn{flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; cursor:pointer; background:none; border:none; color:var(--text-muted); font-family:var(--body); font-size:10px; padding-top:10px;}
+  .navbtn.active{color:var(--accent-amber);}
+  .navbtn svg{width:20px; height:20px;}
+  .navbtn:focus-visible{outline:2px solid var(--accent-violet); border-radius:8px;}
+</style>
+</head>
+<body>
+
+<div class="phone">
+  <div class="screen">
+
+    <!-- ===== HOME ===== -->
+    <div class="app-view active" id="view-home">
+      <div class="view-header">
+        <div><div class="logo">NEIRO</div><div class="logo-sub">Ton journal de concerts</div></div>
+        <div style="display:flex; gap:8px;">
+          <div class="icon-btn" onclick="showView('timeline')" role="button" aria-label="Frise chronologique">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v18M6 8l6-5 6 5M6 16l6 5 6-5"/></svg>
+          </div>
+          <div class="icon-btn" onclick="showView('search')" role="button" aria-label="Rechercher des profils">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+          </div>
+          <div class="avatar">LM</div>
+        </div>
+      </div>
+
+      <div class="stat-row">
+        <div class="stat-chip"><div class="num">47</div><div class="lbl">Concerts</div></div>
+        <div class="stat-chip"><div class="num">23</div><div class="lbl">Artistes</div></div>
+        <div class="stat-chip"><div class="num">7</div><div class="lbl">Cette année</div></div>
+      </div>
+
+      <div class="section-title">Récemment vécus</div>
+
+      <div class="stub" onclick="showView('detail')">
+        <div class="stub-color" style="background:var(--accent-violet)"></div>
+        <div class="stub-dash"></div>
+        <div class="stub-body">
+          <div class="stub-artist">NOVA WAVE</div>
+          <div class="stub-venue">Le Zénith · Paris</div>
+          <div class="stub-meta">
+            <span class="genre-tag" style="background:rgba(139,124,250,0.18); color:var(--accent-violet)">Électro-pop</span>
+            <span class="date-mono">15 MAR 2026</span>
+          </div>
+        </div>
+        <div class="stub-right">
+          <div class="stars">★★★★★</div>
+          <div class="mini-avatars">
+            <div class="mini-avatar" style="background:var(--accent-hot)">C</div>
+            <div class="mini-avatar" style="background:var(--accent-teal)">T</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="stub">
+        <div class="stub-color" style="background:var(--accent-hot)"></div>
+        <div class="stub-dash"></div>
+        <div class="stub-body">
+          <div class="stub-artist">LES ARCHIVES</div>
+          <div class="stub-venue">La Cigale · Paris</div>
+          <div class="stub-meta">
+            <span class="genre-tag" style="background:rgba(255,61,104,0.18); color:var(--accent-hot)">Rock indé</span>
+            <span class="date-mono">28 FÉV 2026</span>
+          </div>
+        </div>
+        <div class="stub-right">
+          <div class="stars">★★★★☆</div>
+          <div class="mini-avatars"><div class="mini-avatar" style="background:var(--accent-violet)">C</div></div>
+        </div>
+      </div>
+
+      <div class="stub">
+        <div class="stub-color" style="background:var(--accent-teal)"></div>
+        <div class="stub-dash"></div>
+        <div class="stub-body">
+          <div class="stub-artist">MIRAGE SOUND</div>
+          <div class="stub-venue">Accor Arena · Paris</div>
+          <div class="stub-meta">
+            <span class="genre-tag" style="background:rgba(45,212,191,0.18); color:var(--accent-teal)">Électro</span>
+            <span class="date-mono">10 FÉV 2026</span>
+          </div>
+        </div>
+        <div class="stub-right"><div class="stars">★★★★★</div></div>
+      </div>
+    </div>
+
+    <!-- ===== RANKING ===== -->
+    <div class="app-view" id="view-ranking">
+      <div class="page-title">Classement</div>
+      <div class="page-sub">Tes concerts, du meilleur au moins bon</div>
+
+      <div class="segmented">
+        <button class="active" onclick="switchRanking(this,'mine')">Mes concerts</button>
+        <button onclick="switchRanking(this,'friends')">Entre amis</button>
+      </div>
+
+      <div id="ranking-mine">
+      <div class="filter-row">
+        <div class="filter-chip active">Tous temps</div>
+        <div class="filter-chip">Cette année</div>
+        <div class="filter-chip">Par genre</div>
+      </div>
+
+      <div class="rank-row top1"><div class="rank-num">01</div><div class="rank-info"><div class="rank-artist">Nova Wave</div><div class="rank-venue">Le Zénith · 15 mar 2026</div></div><div class="rank-score">5.0<span class="stars">★★★★★</span></div></div>
+      <div class="rank-row top2"><div class="rank-num">02</div><div class="rank-info"><div class="rank-artist">Mirage Sound</div><div class="rank-venue">Accor Arena · 10 fév 2026</div></div><div class="rank-score">5.0<span class="stars">★★★★★</span></div></div>
+      <div class="rank-row top3"><div class="rank-num">03</div><div class="rank-info"><div class="rank-artist">Argile</div><div class="rank-venue">Le Trianon · 3 déc 2025</div></div><div class="rank-score">4.8<span class="stars">★★★★★</span></div></div>
+      <div class="rank-row"><div class="rank-num">04</div><div class="rank-info"><div class="rank-artist">Les Archives</div><div class="rank-venue">La Cigale · 28 fév 2026</div></div><div class="rank-score">4.5<span class="stars">★★★★☆</span></div></div>
+      <div class="rank-row"><div class="rank-num">05</div><div class="rank-info"><div class="rank-artist">Volt</div><div class="rank-venue">Le Bataclan · 9 nov 2025</div></div><div class="rank-score">4.3<span class="stars">★★★★☆</span></div></div>
+      <div class="rank-row"><div class="rank-num">06</div><div class="rank-info"><div class="rank-artist">Petra &amp; the Waves</div><div class="rank-venue">Élysée Montmartre · 22 jan 2026</div></div><div class="rank-score">3.5<span class="stars">★★★☆☆</span></div></div>
+      </div>
+
+      <div id="ranking-friends" style="display:none;">
+        <div class="page-sub" style="margin-bottom:14px;">Concerts vus en 2026, entre amis</div>
+        <div class="fl-row"><div class="fl-num">01</div><div class="fl-avatar" style="background:linear-gradient(135deg, var(--accent-hot), var(--accent-amber))">CH</div><div class="fl-info"><div class="fl-name">Chloé</div></div><div class="fl-count">9</div></div>
+        <div class="fl-row me"><div class="fl-num">02</div><div class="fl-avatar" style="background:linear-gradient(135deg, var(--accent-violet), var(--accent-hot))">LM</div><div class="fl-info"><div class="fl-name">Léa <span class="you">(toi)</span></div></div><div class="fl-count">7</div></div>
+        <div class="fl-row"><div class="fl-num">03</div><div class="fl-avatar" style="background:linear-gradient(135deg, var(--accent-teal), var(--accent-violet))">TH</div><div class="fl-info"><div class="fl-name">Thomas</div></div><div class="fl-count">5</div></div>
+        <div class="fl-row"><div class="fl-num">04</div><div class="fl-avatar" style="background:linear-gradient(135deg, var(--accent-amber), var(--accent-hot))">YK</div><div class="fl-info"><div class="fl-name">Yanis K.</div></div><div class="fl-count">3</div></div>
+      </div>
+    </div>
+
+    <!-- ===== TICKETS ===== -->
+    <div class="app-view" id="view-tickets">
+      <div class="page-title">Mes billets</div>
+      <div class="page-sub">Tout ce qui arrive, au même endroit</div>
+
+      <div class="section-title">À venir</div>
+
+      <div class="wallet-card">
+        <div class="wallet-top">
+          <div><div class="wallet-artist">KAÏROS</div><div class="wallet-venue">Le Bataclan · Paris</div></div>
+          <div class="qr"></div>
+        </div>
+        <div class="wallet-tear"></div>
+        <div class="wallet-bottom"><span class="wallet-date">14 JUIN 2026 · 21H00</span><span class="wallet-cat">Fosse</span></div>
+        <div class="expect-field">
+          <input type="text" placeholder="✏️ Note tes attentes pour ce soir...">
+          <div class="expect-save" role="button" aria-label="Enregistrer"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg></div>
+        </div>
+        <div class="wallet-foot" style="margin-top:12px;">
+          <span class="countdown">⏱ Dans 12 jours</span>
+          <div class="foot-right">
+            <span class="offline-badge">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>
+              Hors-ligne
+            </span>
+            <div class="bell on" onclick="this.classList.toggle('on')" role="button" aria-label="Rappel">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M18 8a6 6 0 10-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 01-3.4 0"/></svg>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="wallet-card">
+        <div class="wallet-top">
+          <div><div class="wallet-artist">ROCK EN SEINE</div><div class="wallet-venue">Domaine de Saint-Cloud</div></div>
+          <div class="qr"></div>
+        </div>
+        <div class="wallet-tear"></div>
+        <div class="wallet-bottom"><span class="wallet-date">23 AOÛT 2026</span><span class="wallet-cat">Pass 1 jour</span></div>
+        <div class="wallet-foot">
+          <span class="countdown">⏱ Dans 82 jours</span>
+          <div class="foot-right">
+            <span class="offline-badge"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>Hors-ligne</span>
+            <div class="bell" onclick="this.classList.toggle('on')" role="button" aria-label="Rappel">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M18 8a6 6 0 10-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 01-3.4 0"/></svg>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section-title">Passés</div>
+      <div class="stub" onclick="showView('detail')">
+        <div class="stub-color" style="background:var(--accent-violet)"></div>
+        <div class="stub-dash"></div>
+        <div class="stub-body">
+          <div class="stub-artist">NOVA WAVE</div>
+          <div class="stub-venue">Le Zénith · Paris</div>
+          <div class="stub-meta"><span class="date-mono">15 MAR 2026</span></div>
+        </div>
+        <div class="stub-right"><div class="stars">★★★★★</div></div>
+      </div>
+    </div>
+
+    <!-- ===== ADD ===== -->
+    <div class="app-view" id="view-add">
+      <div class="back-row">
+        <div class="back-btn" onclick="showView('home')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#F5F3FF" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg></div>
+        <div class="page-title" style="font-size:22px; margin:0;">Nouveau concert</div>
+      </div>
+
+      <div class="segmented">
+        <button class="active" onclick="switchAddMode(this,'manual')">Remplir manuellement</button>
+        <button onclick="switchAddMode(this,'scan')">Scanner un billet</button>
+      </div>
+
+      <div id="add-scan" style="display:none;">
+        <div class="scan-viewfinder">
+          <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="var(--accent-violet)" stroke-width="1.6"><path d="M4 7V5a2 2 0 012-2h2M20 7V5a2 2 0 00-2-2h-2M4 17v2a2 2 0 002 2h2M20 17v2a2 2 0 01-2 2h-2"/><circle cx="12" cy="12" r="3.5"/></svg>
+          <div class="hint">Cadre le billet papier, ou colle le texte d'un e-mail de confirmation ci-dessous</div>
+        </div>
+        <div class="field"><textarea placeholder="Coller le texte de l'e-mail de confirmation ici..." style="height:70px;"></textarea></div>
+        <div class="scan-btn-row">
+          <div class="scan-secondary" onclick="document.getElementById('add-scan').querySelector('.detected-card').style.display='none'">Reprendre la photo</div>
+          <div class="scan-primary" onclick="revealDetected()">Analyser</div>
+        </div>
+        <div class="detected-card" style="display:none;">
+          <div class="detected-head">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>
+            Champs détectés automatiquement
+          </div>
+          <div class="detected-row"><span class="k">Artiste</span><span>Kaïros</span></div>
+          <div class="detected-row"><span class="k">Salle</span><span>Le Bataclan, Paris</span></div>
+          <div class="detected-row"><span class="k">Date</span><span>14/06/2026 · 21h00</span></div>
+          <div class="detected-row"><span class="k">Catégorie</span><span>Fosse</span></div>
+        </div>
+        <button class="save-btn" onclick="showView('tickets')">Confirmer et ajouter</button>
+      </div>
+
+      <div id="add-manual">
+      <div class="field"><label>Artiste</label><input type="text" placeholder="Ex. Nova Wave"></div>
+      <div class="field"><label>Salle / Festival</label><input type="text" placeholder="Ex. Le Zénith, Paris"></div>
+      <div class="field"><label>Date</label><input type="text" placeholder="jj/mm/aaaa"></div>
+      <div class="field">
+        <label>Genre</label>
+        <div class="genre-picker">
+          <span class="sel">Électro</span><span>Rock</span><span>Pop</span><span>Indé</span><span>Rap</span><span>+ Autre</span>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Ta note, critère par critère</label>
+        <div class="criteria-row"><span class="criteria-lbl">Son</span><div class="star-picker" data-crit="son"><span data-v="1">★</span><span data-v="2">★</span><span data-v="3">★</span><span data-v="4">★</span><span data-v="5">★</span></div></div>
+        <div class="criteria-row"><span class="criteria-lbl">Ambiance</span><div class="star-picker" data-crit="ambiance"><span data-v="1">★</span><span data-v="2">★</span><span data-v="3">★</span><span data-v="4">★</span><span data-v="5">★</span></div></div>
+        <div class="criteria-row"><span class="criteria-lbl">Setlist</span><div class="star-picker" data-crit="setlist"><span data-v="1">★</span><span data-v="2">★</span><span data-v="3">★</span><span data-v="4">★</span><span data-v="5">★</span></div></div>
+        <div class="criteria-row"><span class="criteria-lbl">Prix</span><div class="star-picker" data-crit="prix"><span data-v="1">★</span><span data-v="2">★</span><span data-v="3">★</span><span data-v="4">★</span><span data-v="5">★</span></div></div>
+      </div>
+
+      <div class="field">
+        <label>Qui était avec toi</label>
+        <div class="chip-input">
+          <div class="tag-chip person">Chloé <span class="x">✕</span></div>
+          <div class="tag-chip person">Thomas <span class="x">✕</span></div>
+          <div class="chip-add">+ Ajouter</div>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Chansons jouées (setlist réelle)</label>
+        <div class="chip-input">
+          <div class="tag-chip">1. Aurore</div><div class="tag-chip">2. Vertige</div><div class="tag-chip">3. Néon Bleu</div>
+          <div class="chip-add">+ Ajouter un titre</div>
+        </div>
+      </div>
+
+      <div class="field"><label>Souvenir / notes</label><textarea placeholder="Le rappel a duré 20 minutes, foule incroyable..."></textarea></div>
+
+      <button class="save-btn" onclick="showView('home')">Ajouter au journal</button>
+      </div>
+    </div>
+
+    <!-- ===== PROFILE ===== -->
+    <div class="app-view" id="view-profile">
+      <div class="page-title" style="margin-bottom:18px;">Profil</div>
+
+      <div class="profile-head">
+        <div class="profile-avatar">LM</div>
+        <div><div class="profile-name">Léa M.</div><div class="profile-tag">Sur la route depuis 2019</div></div>
+      </div>
+
+      <div class="grid-stats">
+        <div class="grid-stat"><div class="num">47</div><div class="lbl">Concerts vus</div></div>
+        <div class="grid-stat"><div class="num">8</div><div class="lbl">Villes</div></div>
+        <div class="grid-stat"><div class="num">23</div><div class="lbl">Artistes</div></div>
+        <div class="grid-stat"><div class="num">≈1240€</div><div class="lbl">Dépensés (est.)</div></div>
+      </div>
+
+      <div class="wrapped-cta" onclick="showView('wrapped')">
+        <div class="k">Récap annuel</div>
+        <div class="t">Ton année en concerts →</div>
+        <div class="s">2026, jusqu'ici : 7 concerts, 4 villes</div>
+      </div>
+
+      <div class="section-title">Concerts par année</div>
+      <div class="bars">
+        <div class="bar-col"><div class="bar" style="height:44%"></div><span class="bar-yr">2023</span></div>
+        <div class="bar-col"><div class="bar" style="height:74%"></div><span class="bar-yr">2024</span></div>
+        <div class="bar-col"><div class="bar" style="height:100%"></div><span class="bar-yr">2025</span></div>
+        <div class="bar-col"><div class="bar" style="height:38%"></div><span class="bar-yr">2026</span></div>
+      </div>
+
+      <div class="section-title">Badges</div>
+      <div class="badge-grid">
+        <div class="badge"><div class="ic">🔥</div><div class="t">10 concerts en 2025</div></div>
+        <div class="badge"><div class="ic">🎪</div><div class="t">3 festivals faits</div></div>
+        <div class="badge"><div class="ic">👯</div><div class="t">Toujours accompagné</div></div>
+        <div class="badge locked"><div class="ic">✈️</div><div class="t">1er concert à l'étranger</div></div>
+        <div class="badge locked"><div class="ic">🌙</div><div class="t">5 concerts un soir de semaine</div></div>
+        <div class="badge"><div class="ic">🏟️</div><div class="t">Une arena, un zénith, un club</div></div>
+      </div>
+
+      <div class="section-title">Records insolites</div>
+      <div class="record-row"><div class="record-ic">🕰️</div><div class="record-t">Le plus ancien souvenir : <b>Argile</b>, en 2019</div></div>
+      <div class="record-row"><div class="record-ic">🚗</div><div class="record-t"><b>310 km</b> parcourus pour voir Volt à Lyon</div></div>
+      <div class="record-row"><div class="record-ic">🔁</div><div class="record-t">Artiste le plus revu : <b>Nova Wave</b>, 4 fois</div></div>
+      <div class="record-row"><div class="record-ic">⚡</div><div class="record-t"><b>3 concerts</b> vus en un seul week-end</div></div>
+
+      <div class="section-title">Amis <span class="link" onclick="showView('search')">+ Rechercher</span></div>
+      <div class="profile-row" onclick="showView('companion')" style="cursor:pointer;">
+        <div class="pr-avatar" style="background:linear-gradient(135deg, var(--accent-hot), var(--accent-amber))">CH</div>
+        <div class="pr-info"><div class="pr-name">Chloé</div><div class="pr-sub">12 concerts ensemble</div></div>
+      </div>
+      <div class="profile-row" onclick="showView('companion')" style="cursor:pointer;">
+        <div class="pr-avatar" style="background:linear-gradient(135deg, var(--accent-teal), var(--accent-violet))">TH</div>
+        <div class="pr-info"><div class="pr-name">Thomas</div><div class="pr-sub">5 concerts ensemble</div></div>
+      </div>
+
+      <div class="section-title">Villes visitées</div>
+      <div class="heat-wrap">
+        <span class="heat-chip" style="background:rgba(255,61,104,0.30); border-color:var(--accent-hot); color:#fff;">Paris · 32</span>
+        <span class="heat-chip" style="background:rgba(139,124,250,0.24); border-color:var(--accent-violet); color:#fff;">Lyon · 6</span>
+        <span class="heat-chip" style="background:rgba(139,124,250,0.14); color:var(--text-muted);">Bruxelles · 4</span>
+        <span class="heat-chip" style="background:rgba(139,124,250,0.10); color:var(--text-muted);">Londres · 3</span>
+        <span class="heat-chip" style="background:var(--surface-alt); color:var(--text-muted);">Berlin · 2</span>
+        <span class="heat-chip" style="background:var(--surface-alt); color:var(--text-muted);">Lisbonne · 1</span>
+      </div>
+
+      <div class="section-title">Réglages</div>
+      <div class="settings-item"><span>Installer l'app sur l'écran d'accueil</span><span class="arrow">›</span></div>
+      <div class="settings-item"><span>Exporter mon journal</span><span class="arrow">›</span></div>
+      <div class="settings-item"><span>Thème</span><span class="arrow">›</span></div>
+    </div>
+
+    <!-- ===== CONCERT DETAIL ===== -->
+    <div class="app-view" id="view-detail">
+      <div class="back-row">
+        <div class="back-btn" onclick="showView('home')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#F5F3FF" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg></div>
+      </div>
+
+      <div class="detail-cover">
+        <div><div class="t">NOVA WAVE</div><div class="v">Le Zénith · Paris · 15 mars 2026</div></div>
+      </div>
+
+      <div class="crit-grid">
+        <div class="crit-box"><div class="lbl">Son</div><div class="val">5.0</div></div>
+        <div class="crit-box"><div class="lbl">Ambiance</div><div class="val">5.0</div></div>
+        <div class="crit-box"><div class="lbl">Setlist</div><div class="val">4.5</div></div>
+        <div class="crit-box"><div class="lbl">Prix</div><div class="val">4.0</div></div>
+      </div>
+
+      <div class="section-title">Avant / Après</div>
+      <div class="ap-grid">
+        <div class="ap-box avant"><div class="k">Avant</div>"J'espère qu'ils jouent Aurore en ouverture, et un nouveau titre en exclu."</div>
+        <div class="ap-box apres"><div class="k">Après</div>"Encore mieux que prévu. Le rappel improvisé restera gravé."</div>
+      </div>
+
+      <div class="section-title">Setlist réelle</div>
+      <div class="song-row"><span class="song-num">01</span> Aurore</div>
+      <div class="song-row"><span class="song-num">02</span> Vertige</div>
+      <div class="song-row"><span class="song-num">03</span> Sel</div>
+      <div class="song-row"><span class="song-num">04</span> Néon Bleu</div>
+      <div class="song-row"><span class="song-num">05</span> Marée</div>
+      <div class="song-row"><span class="song-num">06</span> Long Format</div>
+      <div class="song-row"><span class="song-num">07</span> Rappel</div>
+
+      <div class="section-title">Avec toi</div>
+      <div class="companion-row" onclick="showView('companion')">
+        <div class="avatar" style="background:linear-gradient(135deg, var(--accent-hot), var(--accent-amber)); width:38px; height:38px; font-size:12px;">CH</div>
+        <div><div class="comp-name">Chloé</div><div class="comp-sub">12 concerts ensemble</div></div>
+      </div>
+      <div class="companion-row" onclick="showView('companion')">
+        <div class="avatar" style="background:linear-gradient(135deg, var(--accent-teal), var(--accent-violet)); width:38px; height:38px; font-size:12px;">TH</div>
+        <div><div class="comp-name">Thomas</div><div class="comp-sub">5 concerts ensemble</div></div>
+      </div>
+
+      <div class="section-title">Souvenirs</div>
+      <div class="photo-grid">
+        <div class="photo-ph" style="background:linear-gradient(135deg, var(--accent-violet), var(--accent-hot))"></div>
+        <div class="photo-ph" style="background:linear-gradient(135deg, var(--accent-amber), var(--accent-hot))"></div>
+        <div class="photo-ph" style="background:linear-gradient(135deg, var(--accent-teal), var(--accent-violet))"></div>
+      </div>
+    </div>
+
+    <!-- ===== COMPANION PROFILE ===== -->
+    <div class="app-view" id="view-companion">
+      <div class="back-row">
+        <div class="back-btn" onclick="showView('detail')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#F5F3FF" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg></div>
+      </div>
+      <div class="profile-head">
+        <div class="profile-avatar" style="background:linear-gradient(135deg, var(--accent-hot), var(--accent-amber))">CH</div>
+        <div><div class="profile-name">Chloé</div><div class="profile-tag">12 concerts ensemble</div></div>
+      </div>
+
+      <div class="section-title">Vécus ensemble</div>
+      <div class="stub">
+        <div class="stub-color" style="background:var(--accent-violet)"></div>
+        <div class="stub-dash"></div>
+        <div class="stub-body"><div class="stub-artist">NOVA WAVE</div><div class="stub-venue">Le Zénith · Paris</div><div class="stub-meta"><span class="date-mono">15 MAR 2026</span></div></div>
+        <div class="stub-right"><div class="stars">★★★★★</div></div>
+      </div>
+      <div class="stub">
+        <div class="stub-color" style="background:var(--accent-teal)"></div>
+        <div class="stub-dash"></div>
+        <div class="stub-body"><div class="stub-artist">ARGILE</div><div class="stub-venue">Le Trianon · Paris</div><div class="stub-meta"><span class="date-mono">3 DÉC 2025</span></div></div>
+        <div class="stub-right"><div class="stars">★★★★★</div></div>
+      </div>
+      <div class="stub">
+        <div class="stub-color" style="background:var(--accent-amber)"></div>
+        <div class="stub-dash"></div>
+        <div class="stub-body"><div class="stub-artist">VOLT</div><div class="stub-venue">Le Bataclan · Paris</div><div class="stub-meta"><span class="date-mono">9 NOV 2025</span></div></div>
+        <div class="stub-right"><div class="stars">★★★★☆</div></div>
+      </div>
+    </div>
+
+    <!-- ===== WRAPPED ===== -->
+    <div class="app-view wrapped-view no-nav-pad" id="view-wrapped">
+      <div class="back-row">
+        <div class="back-btn" onclick="showView('profile')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#F5F3FF" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg></div>
+      </div>
+      <div class="wrapped-hero">Ton année<br>en concerts</div>
+      <div class="page-sub" style="margin-bottom:26px;">2026, jusqu'ici</div>
+
+      <div class="wrapped-block"><div class="wrapped-num">7</div><div class="wrapped-lbl">concerts vécus</div></div>
+      <div class="wrapped-block"><div class="wrapped-num">4</div><div class="wrapped-lbl">villes différentes</div></div>
+      <div class="wrapped-block"><div class="wrapped-num">41%</div><div class="wrapped-lbl">de tes soirées étaient électro</div></div>
+
+      <div class="wrapped-line">Artiste le plus vu : <b>Nova Wave</b>, 2 fois</div>
+      <div class="wrapped-line">Ville la plus visitée : <b>Paris</b></div>
+      <div class="wrapped-line">Meilleure soirée : <b>Nova Wave</b> au Zénith, le 15 mars</div>
+      <div class="wrapped-line">Record du mois : <b>3 concerts</b> en mars</div>
+    </div>
+
+    <!-- ===== SEARCH / FRIENDS ===== -->
+    <div class="app-view" id="view-search">
+      <div class="back-row">
+        <div class="back-btn" onclick="showView('home')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#F5F3FF" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg></div>
+        <div class="page-title" style="font-size:22px; margin:0;">Rechercher</div>
+      </div>
+
+      <div class="search-input-wrap">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+        <input type="text" placeholder="Nom, pseudo...">
+      </div>
+
+      <div class="section-title">Déjà amis</div>
+      <div class="profile-row">
+        <div class="pr-avatar" style="background:linear-gradient(135deg, var(--accent-hot), var(--accent-amber))">CH</div>
+        <div class="pr-info"><div class="pr-name">Chloé</div><div class="pr-sub">12 concerts ensemble</div></div>
+        <div class="friend-btn friend" onclick="cycleFriendBtn(this)">Ami ✓</div>
+      </div>
+
+      <div class="section-title">Suggestions</div>
+      <div class="profile-row">
+        <div class="pr-avatar" style="background:linear-gradient(135deg, var(--accent-violet), var(--accent-teal))">MJ</div>
+        <div class="pr-info"><div class="pr-name">Manon J.</div><div class="pr-sub">3 amis en commun</div></div>
+        <div class="friend-btn" onclick="cycleFriendBtn(this)">+ Ajouter</div>
+      </div>
+      <div class="profile-row">
+        <div class="pr-avatar" style="background:linear-gradient(135deg, var(--accent-amber), var(--accent-hot))">YK</div>
+        <div class="pr-info"><div class="pr-name">Yanis K.</div><div class="pr-sub">Vu à Rock en Seine 2025</div></div>
+        <div class="friend-btn" onclick="cycleFriendBtn(this)">+ Ajouter</div>
+      </div>
+      <div class="profile-row">
+        <div class="pr-avatar" style="background:linear-gradient(135deg, var(--accent-teal), var(--accent-violet))">SB</div>
+        <div class="pr-info"><div class="pr-name">Sofia B.</div><div class="pr-sub">1 ami en commun</div></div>
+        <div class="friend-btn pending" onclick="cycleFriendBtn(this)">Envoyé</div>
+      </div>
+    </div>
+
+    <!-- ===== TIMELINE ===== -->
+    <div class="app-view" id="view-timeline">
+      <div class="back-row">
+        <div class="back-btn" onclick="showView('home')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#F5F3FF" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg></div>
+        <div class="page-title" style="font-size:22px; margin:0;">Ta frise</div>
+      </div>
+
+      <div class="tl-year">2026</div>
+      <div class="tl-track">
+        <div class="tl-item">
+          <div class="tl-dot" style="background:var(--accent-violet)"></div>
+          <div class="tl-artist">Nova Wave</div>
+          <div class="tl-sub">Le Zénith, Paris · 15 mars</div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-dot" style="background:var(--accent-hot)"></div>
+          <div class="tl-artist">Les Archives</div>
+          <div class="tl-sub">La Cigale, Paris · 28 février</div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-dot" style="background:var(--accent-teal)"></div>
+          <div class="tl-artist">Mirage Sound</div>
+          <div class="tl-sub">Accor Arena, Paris · 10 février</div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-dot" style="background:var(--accent-amber)"></div>
+          <div class="tl-artist">Petra &amp; the Waves</div>
+          <div class="tl-sub">Élysée Montmartre · 22 janvier</div>
+        </div>
+      </div>
+
+      <div class="tl-year">2025</div>
+      <div class="tl-track">
+        <div class="tl-item">
+          <div class="tl-dot" style="background:var(--accent-amber)"></div>
+          <div class="tl-artist">Argile</div>
+          <div class="tl-sub">Le Trianon, Paris · 3 décembre</div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-dot" style="background:var(--accent-violet)"></div>
+          <div class="tl-artist">Volt</div>
+          <div class="tl-sub">Le Bataclan, Paris · 9 novembre</div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-dot" style="background:var(--accent-hot)"></div>
+          <div class="tl-artist">Rock en Seine</div>
+          <div class="tl-sub">Domaine de Saint-Cloud · 3 jours, août</div>
+        </div>
+      </div>
+
+      <div class="tl-year">2024</div>
+      <div class="tl-track">
+        <div class="tl-item">
+          <div class="tl-dot" style="background:var(--accent-teal)"></div>
+          <div class="tl-artist">Nova Wave</div>
+          <div class="tl-sub">Élysée Montmartre · 12 mai</div>
+        </div>
+      </div>
+    </div>
+
+    <button class="fab" onclick="showView('add')" aria-label="Ajouter un concert">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+    </button>
+
+    <nav class="navbar">
+      <button class="navbtn active" data-view="home" onclick="showView('home')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/></svg>Accueil
+      </button>
+      <button class="navbtn" data-view="ranking" onclick="showView('ranking')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 21h8M12 17v4M6 4h12v3a6 6 0 01-12 0V4z"/><path d="M6 6H3v2a4 4 0 004 4M18 6h3v2a4 4 0 01-4 4"/></svg>Classement
+      </button>
+      <button class="navbtn" data-view="tickets" onclick="showView('tickets')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 8a2 2 0 012-2h14a2 2 0 012 2v2a2 2 0 000 4v2a2 2 0 01-2 2H5a2 2 0 01-2-2v-2a2 2 0 000-4V8z"/></svg>Billets
+      </button>
+      <button class="navbtn" data-view="profile" onclick="showView('profile')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 5-6 8-6s6.5 2 8 6"/></svg>Profil
+      </button>
+    </nav>
+
+  </div>
+</div>
+
+<div class="intro">
+  Maquette interactive — barre du bas pour <b>Accueil / Classement / Billets / Profil</b>, touche un billet-souche pour ouvrir sa <b>fiche détaillée</b> (setlist, notes par critère, personnes présentes), touche un compagnon pour voir son <b>profil</b>, et essaie <b>Ton année en concerts</b> depuis le Profil.
+</div>
+
+<script>
+function showView(name){
+  document.querySelectorAll('.app-view').forEach(v => v.classList.remove('active'));
+  document.getElementById('view-' + name).classList.add('active');
+  document.querySelectorAll('.navbtn').forEach(b => b.classList.remove('active'));
+  const btn = document.querySelector('.navbtn[data-view="' + name + '"]');
+  if(btn) btn.classList.add('active');
+  document.querySelector('.screen').scrollTop = 0;
+  const activeView = document.getElementById('view-' + name);
+  if(activeView) activeView.scrollTop = 0;
+}
+
+// interactive star pickers (one per criterion) on Add screen
+document.querySelectorAll('.star-picker').forEach(picker => {
+  let current = 4;
+  const spans = picker.querySelectorAll('span');
+  function render(){ spans.forEach(s => s.classList.toggle('sel', parseInt(s.dataset.v) <= current)); }
+  spans.forEach(s => s.addEventListener('click', () => { current = parseInt(s.dataset.v); render(); }));
+  render();
+});
+
+// cycle add-friend button through its states (demo only, resets on reload)
+function cycleFriendBtn(btn){
+  if(btn.classList.contains('friend')) return; // already friends, nothing more to do
+  if(btn.classList.contains('pending')){
+    btn.classList.remove('pending'); btn.classList.add('friend'); btn.textContent = 'Ami ✓';
+  } else {
+    btn.classList.add('pending'); btn.textContent = 'Envoyé';
+  }
+}
+
+// ranking: mine vs friends
+function switchRanking(btn, mode){
+  btn.parentElement.querySelectorAll('button').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('ranking-mine').style.display = mode === 'mine' ? 'block' : 'none';
+  document.getElementById('ranking-friends').style.display = mode === 'friends' ? 'block' : 'none';
+}
+
+// add concert: manual vs scan
+function switchAddMode(btn, mode){
+  btn.parentElement.querySelectorAll('button').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('add-manual').style.display = mode === 'manual' ? 'block' : 'none';
+  document.getElementById('add-scan').style.display = mode === 'scan' ? 'block' : 'none';
+}
+
+// scan ticket: reveal the "detected fields" preview
+function revealDetected(){
+  document.querySelector('#add-scan .detected-card').style.display = 'block';
+}
+
+// genre picker single-select
+document.querySelectorAll('.genre-picker span').forEach(chip => {
+  chip.addEventListener('click', () => {
+    document.querySelectorAll('.genre-picker span').forEach(c => c.classList.remove('sel'));
+    chip.classList.add('sel');
+  });
+});
+</script>
+
+</body>
+</html>
