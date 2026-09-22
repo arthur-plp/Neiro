@@ -12,6 +12,12 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Outillage et documentation, pas du code applicatif. Les scripts
+    // vendorés de .agents/ sont minifiés : les linter coûtait plusieurs
+    // minutes et noyait nos propres avertissements sous 94 faux positifs.
+    ".agents/**",
+    ".claude/**",
+    "openspec/**",
   ]),
 ]);
 
