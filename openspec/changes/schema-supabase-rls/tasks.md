@@ -35,9 +35,9 @@
 
 ## 6. Accès applicatif
 
-- [ ] 6.1 Écrire `lib/supabase/client.ts` et `lib/supabase/server.ts` (décision D3) ; vérifier que les deux s'instancient sans erreur et que seule la clé publique est employée
-- [ ] 6.2 Vérifier par `grep` qu'aucune clé ne figure dans le dépôt et que la clé de service n'est référencée que dans `.env.example`
-- [ ] 6.3 Exposer les types TypeScript des tables dérivés du schéma Drizzle (décision D4) ; vérifier qu'un champ inexistant provoque bien une erreur de compilation
+- [x] 6.1 Écrire `lib/supabase/client.ts` et `lib/supabase/server.ts` (décision D3) ; vérifier que les deux s'instancient sans erreur et que seule la clé publique est employée
+- [x] 6.2 Vérifier par `grep` qu'aucune clé ne figure dans le dépôt et que la clé de service n'est référencée que dans `.env.example`
+- [x] 6.3 Exposer les types TypeScript des tables dérivés du schéma Drizzle (décision D4) ; vérifier qu'un champ inexistant provoque bien une erreur de compilation
 
 ## 7. Vérification
 
