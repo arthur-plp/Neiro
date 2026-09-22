@@ -5,29 +5,74 @@ import { useState } from "react";
 import { PrimaryButton } from "@/components/ui/primary-button";
 import { createClient } from "@/lib/supabase/client";
 
-type Etat = "saisie" | "envoi" | "envoye";
+type Etat = "saisie" | "envoi" | "envoye" | "panne";
 
 export function LoginForm({ messageInitial }: { messageInitial?: string }) {
   const [email, setEmail] = useState("");
   const [etat, setEtat] = useState<Etat>("saisie");
+  const [attente, setAttente] = useState<string | null>(null);
 
   async function envoyer(e: React.FormEvent) {
     e.preventDefault();
     if (etat === "envoi") return;
     setEtat("envoi");
+    setAttente(null);
 
     const supabase = createClient();
-    // La réponse est volontairement ignorée : le message affiché est le même
-    // que l'adresse soit connue ou non, et que l'envoi aboutisse ou non.
-    // Sans cela, l'écran de connexion dirait qui utilise l'application.
-    await supabase.auth
+    const { error } = await supabase.auth
       .signInWithOtp({
         email,
         options: { emailRedirectTo: `${window.location.origin}/callback` },
       })
-      .catch(() => undefined);
+      .catch(() => ({ error: { status: 0, message: "réseau" } }));
+
+    // Deux familles d'erreurs, à traiter différemment.
+    //
+    // Celles qui portent sur l'adresse — inconnue, refusée, déjà utilisée —
+    // sont tues : les distinguer d'un succès transformerait cet écran en
+    // outil permettant de savoir qui utilise l'application.
+    //
+    // Celles qui portent sur l'infrastructure — SMTP en panne, service
+    // injoignable, quota dépassé — ne disent rien de l'utilisateur et tout
+    // du service. Les taire laisse quelqu'un attendre un e-mail qui n'est
+    // jamais parti, ce qui est exactement ce qu'il ne faut pas faire.
+    const statut = error && "status" in error ? Number(error.status) : 0;
+
+    if (error && (statut === 0 || statut >= 500)) {
+      setEtat("panne");
+      return;
+    }
+    if (error && statut === 429) {
+      setAttente(
+        "Trop de demandes en peu de temps. Attends une minute avant de réessayer.",
+      );
+      setEtat("saisie");
+      return;
+    }
 
     setEtat("envoye");
+  }
+
+  if (etat === "panne") {
+    return (
+      <div className="border-accent-hot rounded-2xl border bg-[color-mix(in_srgb,var(--color-accent-hot)_10%,transparent)] p-5 text-center">
+        <p className="font-display text-accent-hot text-xl">
+          L&apos;envoi est en panne
+        </p>
+        <p className="text-text-muted mt-3 text-[13px] leading-relaxed">
+          Aucun e-mail n&apos;a pu partir. Ce n&apos;est pas ton adresse qui est
+          en cause : le service d&apos;envoi ne répond pas. Inutile d&apos;aller
+          fouiller tes indésirables.
+        </p>
+        <button
+          type="button"
+          onClick={() => setEtat("saisie")}
+          className="text-accent-violet mt-4 text-[12px] font-semibold"
+        >
+          Réessayer
+        </button>
+      </div>
+    );
   }
 
   if (etat === "envoye") {
@@ -54,6 +99,12 @@ export function LoginForm({ messageInitial }: { messageInitial?: string }) {
 
   return (
     <form onSubmit={envoyer}>
+      {attente && (
+        <p className="border-accent-amber text-accent-amber mb-5 rounded-xl border bg-[color-mix(in_srgb,var(--color-accent-amber)_12%,transparent)] px-4 py-3 text-[12px] leading-relaxed">
+          {attente}
+        </p>
+      )}
+
       {messageInitial && (
         <p className="border-accent-hot text-accent-hot mb-5 rounded-xl border bg-[color-mix(in_srgb,var(--color-accent-hot)_12%,transparent)] px-4 py-3 text-[12px] leading-relaxed">
           {messageInitial}

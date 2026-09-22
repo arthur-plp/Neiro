@@ -29,14 +29,26 @@ Une adresse inconnue SHALL créer un compte ; une adresse connue SHALL ouvrir un
 
 ### Requirement: L'envoi ne révèle pas si une adresse est inscrite
 
-Après une demande de lien, le système SHALL afficher le même message de confirmation que l'adresse corresponde ou non à un compte existant, et que l'envoi ait abouti ou non.
+Après une demande de lien, le système SHALL afficher le même message de confirmation que l'adresse corresponde ou non à un compte existant.
 
 Cette réponse uniforme évite de transformer l'écran de connexion en outil permettant de savoir qui utilise l'application.
+
+Les défaillances qui ne portent pas sur l'adresse font exception : une panne du service d'envoi ou un quota dépassé ne disent rien de l'utilisateur et tout du service. Le système SHALL les distinguer d'un succès et l'annoncer, plutôt que de laisser quelqu'un attendre un e-mail qui n'est jamais parti.
 
 #### Scenario: Adresse inconnue
 
 - **WHEN** un lien est demandé pour une adresse qui n'a jamais servi
 - **THEN** le message affiché est identique à celui d'une adresse inscrite
+
+#### Scenario: Service d'envoi en panne
+
+- **WHEN** le service d'envoi refuse la demande pour une raison qui ne dépend pas de l'adresse
+- **THEN** l'utilisateur est informé que l'envoi a échoué et que son adresse n'est pas en cause, au lieu d'être invité à consulter sa boîte mail
+
+#### Scenario: Quota dépassé
+
+- **WHEN** trop de demandes sont envoyées en peu de temps
+- **THEN** l'utilisateur est invité à patienter, et aucune information sur l'existence du compte n'est divulguée
 
 ### Requirement: Un lien est à usage unique et périmable
 
