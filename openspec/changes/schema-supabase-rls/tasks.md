@@ -3,15 +3,15 @@
 ## 1. Projet Supabase et raccordement
 
 - [ ] 1.1 Créer le projet Supabase `neiro` sur le palier gratuit, région Europe (action utilisateur) ; vérifier que le tableau de bord du projet est accessible et que la base répond
-- [ ] 1.2 Écrire `.env.example` avec les noms de variables et un commentaire par variable, sans aucune valeur ; vérifier par `git check-ignore .env.local` que le fichier de valeurs réelles est bien ignoré et par `git status` qu'il n'apparaît jamais
+- [x] 1.2 Écrire `.env.example` avec les noms de variables et un commentaire par variable, sans aucune valeur ; vérifier par `git check-ignore .env.local` que le fichier de valeurs réelles est bien ignoré et par `git status` qu'il n'apparaît jamais
 - [ ] 1.3 Remplir `.env.local` avec l'URL du projet, la clé publique et la chaîne de connexion (action utilisateur, valeurs jamais transmises dans la conversation) ; vérifier par un script de diagnostic que la connexion à la base aboutit, sans afficher les secrets
-- [ ] 1.4 Installer `drizzle-orm`, `drizzle-kit`, `postgres`, `@supabase/supabase-js` et `@supabase/ssr` ; vérifier que `npx tsc --noEmit` passe toujours
+- [x] 1.4 Installer `drizzle-orm`, `drizzle-kit`, `postgres`, `@supabase/supabase-js` et `@supabase/ssr` ; vérifier que `npx tsc --noEmit` passe toujours
 
 ## 2. Schéma Drizzle
 
-- [ ] 2.1 Écrire `db/schema.ts` : `profiles`, `festivals`, `concerts`, `concert_companions`, `friendships`, `badges`, avec les écarts justifiés au proposal (billet fusionné dans `concerts`, festival parent, statut non stocké) ; vérifier que le fichier compile et que les types s'infèrent
-- [ ] 2.2 Poser les contraintes d'intégrité en base (décision D5) : notes entre 1 et 5, pas d'auto-tag en compagnon, pas d'auto-amitié, unicité d'un badge par type et par utilisateur, cohérence entre origine de saisie et référence de fichier, suppressions en cascade ; vérifier que chaque contrainte apparaît dans le SQL généré
-- [ ] 2.3 Configurer `drizzle.config.ts` et générer la migration de structure ; vérifier que le SQL produit contient les six tables et toutes les contraintes de 2.2
+- [x] 2.1 Écrire `db/schema.ts` : `profiles`, `festivals`, `concerts`, `concert_companions`, `friendships`, `badges`, avec les écarts justifiés au proposal (billet fusionné dans `concerts`, festival parent, statut non stocké) ; vérifier que le fichier compile et que les types s'infèrent
+- [x] 2.2 Poser les contraintes d'intégrité en base (décision D5) : notes entre 1 et 5, pas d'auto-tag en compagnon, pas d'auto-amitié, unicité d'un badge par type et par utilisateur, cohérence entre origine de saisie et référence de fichier, suppressions en cascade ; vérifier que chaque contrainte apparaît dans le SQL généré
+- [x] 2.3 Configurer `drizzle.config.ts` et générer la migration de structure ; vérifier que le SQL produit contient les six tables et toutes les contraintes de 2.2
 - [ ] 2.4 Appliquer la migration sur le projet Supabase ; vérifier dans l'éditeur de tables que les six tables existent avec leurs colonnes et leurs clés étrangères
 
 ## 3. Profils et authentification de base
