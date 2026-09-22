@@ -24,10 +24,10 @@ Lève le risque R1 au seul moment où le repli est gratuit. Rien de ce groupe n'
 
 ## 4. Tokens de design
 
-- [ ] 4.1 Déclarer les dix couleurs de la palette en tokens `@theme` dans `app/globals.css` (décision D2) et vérifier qu'une classe utilitaire comme `bg-surface-alt` rend exactement `#211F2C` dans l'inspecteur du navigateur
-- [ ] 4.2 Charger Anton, Space Grotesk (400/500/600/700) et IBM Plex Mono via `next/font/google` dans `app/layout.tsx`, exposées en variables CSS et branchées sur les familles `@theme` (décision D3) ; vérifier dans l'onglet réseau des devtools qu'aucune requête ne part vers `fonts.googleapis.com` ni `fonts.gstatic.com`
-- [ ] 4.3 Appliquer dans `app/layout.tsx` le fond d'ambiance backstage (fond `bg` plus halo violet en haut à gauche et halo rose en bas à droite) et la police de corps par défaut ; vérifier sur une page au contenu très court que le fond couvre bien toute la fenêtre
-- [ ] 4.4 Ajouter les styles de base : `lang="fr"` sur `<html>`, contour de focus `accent-violet` sur les éléments interactifs, et neutralisation des animations sous `prefers-reduced-motion: reduce` ; vérifier au clavier que le focus est visible, et avec l'émulation « reduce » des devtools qu'aucune transition ne se joue
+- [x] 4.1 Déclarer les dix couleurs de la palette en tokens `@theme` dans `app/globals.css` (décision D2) et vérifier qu'une classe utilitaire comme `bg-surface-alt` rend exactement `#211F2C` dans l'inspecteur du navigateur
+- [x] 4.2 Charger Anton, Space Grotesk (400/500/600/700) et IBM Plex Mono via `next/font/google` dans `app/layout.tsx`, exposées en variables CSS et branchées sur les familles `@theme` (décision D3) ; vérifier dans l'onglet réseau des devtools qu'aucune requête ne part vers `fonts.googleapis.com` ni `fonts.gstatic.com`
+- [x] 4.3 Appliquer dans `app/layout.tsx` le fond d'ambiance backstage (fond `bg` plus halo violet en haut à gauche et halo rose en bas à droite) et la police de corps par défaut ; vérifier sur une page au contenu très court que le fond couvre bien toute la fenêtre
+- [x] 4.4 Ajouter les styles de base : `lang="fr"` sur `<html>`, contour de focus `accent-violet` sur les éléments interactifs, et neutralisation des animations sous `prefers-reduced-motion: reduce` ; vérifier au clavier que le focus est visible, et avec l'émulation « reduce » des devtools qu'aucune transition ne se joue
 
 ## 5. Primitives d'interface
 

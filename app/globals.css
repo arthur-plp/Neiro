@@ -1,1 +1,73 @@
 @import "tailwindcss";
+
+/* Palette de la section 2 du cahier des charges.
+   Source de vérité unique : aucune de ces valeurs ne doit être réécrite
+   en dur ailleurs dans le projet.
+   `static` est nécessaire : sans lui, Tailwind v4 élague les variables
+   qu'aucune source n'utilise encore, et la palette serait incomplète tant
+   qu'une couleur n'a pas trouvé son premier usage. */
+@theme static {
+  --color-bg: #0b0b14;
+  --color-surface: #17161f;
+  --color-surface-alt: #211f2c;
+  --color-border: #2b293a;
+  --color-text: #f5f3ff;
+  --color-text-muted: #8d89a0;
+  --color-accent-hot: #ff3d68;
+  --color-accent-amber: #ffc857;
+  --color-accent-violet: #8b7cfa;
+  --color-accent-teal: #2dd4bf;
+}
+
+/* Les trois rôles typographiques, branchés sur les variables que
+   next/font expose depuis le layout racine. `inline` résout la référence
+   au moment de la compilation plutôt que de la recopier telle quelle. */
+@theme static inline {
+  --font-display: var(--font-anton);
+  --font-body: var(--font-space-grotesk);
+  --font-mono: var(--font-ibm-plex-mono);
+}
+
+@layer base {
+  html {
+    /* Porté par html pour que le fond couvre la fenêtre même quand le
+       contenu est plus court, et pendant le sur-défilement. */
+    background-color: var(--color-bg);
+  }
+
+  body {
+    min-height: 100dvh;
+    /* Ambiance « backstage » : halo violet en haut à gauche, halo rose en
+       bas à droite. Les halos sont dérivés des tokens plutôt que réécrits,
+       pour qu'un changement de palette les suive. */
+    background-image:
+      radial-gradient(
+        circle at 15% 10%,
+        color-mix(in srgb, var(--color-accent-violet) 20%, transparent),
+        transparent 40%
+      ),
+      radial-gradient(
+        circle at 85% 85%,
+        color-mix(in srgb, var(--color-accent-hot) 16%, transparent),
+        transparent 45%
+      );
+    background-attachment: fixed;
+    color: var(--color-text);
+    font-family: var(--font-body);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-accent-violet);
+    outline-offset: 2px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
+}
