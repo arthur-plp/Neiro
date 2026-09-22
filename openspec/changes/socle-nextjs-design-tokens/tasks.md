@@ -17,10 +17,10 @@
 
 Lève le risque R1 au seul moment où le repli est gratuit. Rien de ce groupe n'est conservé : il valide une décision de l'étape 1, il ne livre aucune partie de l'étape 5.
 
-- [ ] 3.1 Installer `@serwist/turbopack`, `serwist` et `esbuild`, câbler le minimum documenté (wrapper `withSerwist` dans `next.config.ts`, `app/sw.ts`, route handler `app/serwist/[path]/route.ts`, `SerwistProvider` dans `app/layout.tsx`) et vérifier que `npm run build` se termine sans erreur
-- [ ] 3.2 Vérifier qu'un service worker est réellement émis et enregistré : présence du fichier généré après le build, et `navigator.serviceWorker.getRegistrations()` non vide dans la console du navigateur sur l'application lancée en production locale
-- [ ] 3.3 Si 3.1 ou 3.2 échoue : ne pas contourner. Figer Next sur 15.5.x, réintégrer par le chemin webpack `@serwist/next`, revérifier 3.2, puis amender D1 et R1 dans `design.md` pour consigner ce qui a été observé
-- [ ] 3.4 Retirer entièrement le spike (dépendances, fichiers, modification du layout) et vérifier par `git status` et `npm run build` que le projet est revenu à l'état de fin du groupe 2 ; consigner le résultat en une ligne dans `design.md` sous R1
+- [x] 3.1 Installer `@serwist/turbopack`, `serwist` et `esbuild`, câbler le minimum documenté (wrapper `withSerwist` dans `next.config.ts`, `app/sw.ts`, route handler `app/serwist/[path]/route.ts`, `SerwistProvider` dans `app/layout.tsx`) et vérifier que `npm run build` se termine sans erreur
+- [x] 3.2 Vérifier qu'un service worker est réellement émis et enregistré : présence du fichier généré après le build, et `navigator.serviceWorker.getRegistrations()` non vide dans la console du navigateur sur l'application lancée en production locale
+- [x] 3.3 (non déclenché — 3.1 et 3.2 ont réussi) Si 3.1 ou 3.2 échoue : ne pas contourner. Figer Next sur 15.5.x, réintégrer par le chemin webpack `@serwist/next`, revérifier 3.2, puis amender D1 et R1 dans `design.md` pour consigner ce qui a été observé
+- [x] 3.4 Retirer entièrement le spike (dépendances, fichiers, modification du layout) et vérifier par `git status` et `npm run build` que le projet est revenu à l'état de fin du groupe 2 ; consigner le résultat en une ligne dans `design.md` sous R1
 
 ## 4. Tokens de design
 
