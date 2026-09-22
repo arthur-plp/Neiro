@@ -8,10 +8,10 @@
 
 ## 2. Initialisation du projet
 
-- [ ] 2.1 Initialiser le projet Next.js 16 à la racine (App Router, TypeScript, Tailwind v4, ESLint, alias d'import `@/`, pas de dossier `src/`) et vérifier que `npm run dev` sert la page par défaut sur `http://localhost:3000`
-- [ ] 2.2 Vérifier que le `.gitignore` déjà présent couvre bien `node_modules`, `.next` et `.env*`, et fusionner sans doublon ce que l'initialisation aurait ajouté ; vérifier par `git status` qu'aucun fichier généré n'apparaît en attente
-- [ ] 2.3 Activer le mode strict complet dans `tsconfig.json` (`strict`, `noUncheckedIndexedAccess`, `noImplicitOverride`) et vérifier que `npx tsc --noEmit` passe sans erreur
-- [ ] 2.4 Supprimer les gabarits par défaut de `create-next-app` (contenu de `app/page.tsx`, styles d'exemple dans `globals.css`, SVG de démonstration dans `public/`) et vérifier que l'application démarre toujours sans erreur de ressource manquante
+- [x] 2.1 Initialiser le projet Next.js 16 à la racine (App Router, TypeScript, Tailwind v4, ESLint, alias d'import `@/`, pas de dossier `src/`) et vérifier que `npm run dev` sert la page par défaut sur `http://localhost:3000`
+- [x] 2.2 Vérifier que le `.gitignore` déjà présent couvre bien `node_modules`, `.next` et `.env*`, et fusionner sans doublon ce que l'initialisation aurait ajouté ; vérifier par `git status` qu'aucun fichier généré n'apparaît en attente
+- [x] 2.3 Activer le mode strict complet dans `tsconfig.json` (`strict`, `noUncheckedIndexedAccess`, `noImplicitOverride`) et vérifier que `npx tsc --noEmit` passe sans erreur
+- [x] 2.4 Supprimer les gabarits par défaut de `create-next-app` (contenu de `app/page.tsx`, styles d'exemple dans `globals.css`, SVG de démonstration dans `public/`) et vérifier que l'application démarre toujours sans erreur de ressource manquante
 
 ## 3. Vérification de l'intégration Serwist (spike jetable)
 
