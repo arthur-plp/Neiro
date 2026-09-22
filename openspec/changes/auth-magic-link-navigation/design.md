@@ -78,6 +78,23 @@ Les segments d'URL sont en français parce qu'ils sont visibles par l'utilisateu
 
 Rationale : il n'y a rien à afficher. Une page rendrait un écran intermédiaire visible le temps de l'échange, et l'utilisateur verrait passer un flash blanc entre son e-mail et son accueil.
 
+### D8 — La route de rappel accepte les deux formes de lien
+
+Constaté en implémentant : Supabase produit deux formes de lien selon qui a initié la demande.
+
+- `?code=` — flux PKCE, quand c'est le navigateur qui a demandé le lien. C'est le cas nominal de l'écran de connexion, car `@supabase/ssr` stocke un vérificateur côté client.
+- `?token_hash=&type=` — vérification côté serveur, la forme des liens émis hors navigateur et des gabarits d'e-mail utilisant `{{ .TokenHash }}`.
+
+**Décision : `/callback` traite les deux.**
+
+Rationale : ne gérer que la première produit une panne silencieuse particulièrement traîtresse — le lien atterrit sur la connexion avec un message d'expiration, alors qu'il était parfaitement valide. L'utilisateur conclut que l'application est cassée, et le symptôme ne désigne pas la cause. Quelques lignes suffisent à couvrir les deux.
+
+### D9 — L'URL de rappel doit être déclarée dans Supabase
+
+Également constaté en implémentant, et absent du plan initial : Supabase remplace silencieusement tout `redirect_to` qui ne figure pas dans sa liste blanche par l'URL du site. Le lien atterrit alors sur `/` au lieu de `/callback`, le code n'est jamais échangé, et la connexion échoue sans message d'erreur exploitable.
+
+**Décision : `http://localhost:3000/**` et l'URL de production sont déclarées dans *Authentication → URL Configuration → Redirect URLs*.** C'est une configuration obligatoire, pas un réglage optionnel ; elle est inscrite comme tâche pour ne pas rester tacite.
+
 ### D5 — L'écran de connexion se construit avec le design system existant
 
 Aucun écran de connexion n'existe en maquette. La tentation serait d'en dessiner un nouveau.
