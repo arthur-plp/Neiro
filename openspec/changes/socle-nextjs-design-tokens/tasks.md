@@ -31,16 +31,16 @@ Lève le risque R1 au seul moment où le repli est gratuit. Rien de ce groupe n'
 
 ## 5. Primitives d'interface
 
-- [ ] 5.1 Écrire `lib/cn.ts` pour la concaténation de classes conditionnelles ; vérifier qu'une classe passée sous condition fausse n'apparaît pas dans le rendu
-- [ ] 5.2 Écrire la puce de statistique et le tag de genre dans `components/ui/` et `components/concert/`, le tag recevant sa couleur d'accent en prop (décision D7) ; vérifier leur rendu sur la page de vérification
-- [ ] 5.3 Écrire la chip de filtre et le contrôle segmenté en composants clients (décision D6), état sélectionné remonté au parent ; vérifier que cliquer une option déplace bien l'indicateur actif
-- [ ] 5.4 Écrire le bouton principal au dégradé rose vers ambre, libellé en police display ; vérifier que son contour de focus reste visible au clavier
-- [ ] 5.5 Écrire la souche de billet dans `components/concert/ticket-stub.tsx` : couleur d'accent reçue en prop et appliquée à la fois à la bande et au tag de genre (décision D7), encoches latérales, ligne pointillée de déchirure, rotation alternée déterministe (décisions D4 et D5), troncature propre des textes longs ; vérifier avec une liste de plusieurs souches que les rotations alternent, que deux souches de même genre affichent bien les couleurs distinctes qu'on leur passe, et qu'un nom d'artiste très long ne déborde pas
+- [x] 5.1 Écrire `lib/cn.ts` pour la concaténation de classes conditionnelles ; vérifier qu'une classe passée sous condition fausse n'apparaît pas dans le rendu
+- [x] 5.2 Écrire la puce de statistique et le tag de genre dans `components/ui/` et `components/concert/`, le tag recevant sa couleur d'accent en prop (décision D7) ; vérifier leur rendu sur la page de vérification
+- [x] 5.3 Écrire la chip de filtre et le contrôle segmenté en composants clients (décision D6), état sélectionné remonté au parent ; vérifier que cliquer une option déplace bien l'indicateur actif
+- [x] 5.4 Écrire le bouton principal au dégradé rose vers ambre, libellé en police display ; vérifier que son contour de focus reste visible au clavier
+- [x] 5.5 Écrire la souche de billet dans `components/concert/ticket-stub.tsx` : couleur d'accent reçue en prop et appliquée à la fois à la bande et au tag de genre (décision D7), encoches latérales, ligne pointillée de déchirure, rotation alternée déterministe (décisions D4 et D5), troncature propre des textes longs ; vérifier avec une liste de plusieurs souches que les rotations alternent, que deux souches de même genre affichent bien les couleurs distinctes qu'on leur passe, et qu'un nom d'artiste très long ne déborde pas
 
 ## 6. Vérification
 
-- [ ] 6.1 Construire la page `/design-system` présentant tous les tokens de couleur, les trois rôles typographiques et chaque primitive dans ses états, sans lien depuis la navigation ; vérifier qu'elle s'affiche sur `http://localhost:3000/design-system`
-- [ ] 6.2 Ouvrir `/design-system` et `neiro-maquette.html` côte à côte et corriger tout écart de couleur, de police, d'espacement ou de forme ; vérifier que chaque primitive est indiscernable de son équivalent dans la maquette
-- [ ] 6.3 Vérifier par `grep` qu'aucune des dix valeurs hexadécimales de la palette n'apparaît en dur hors de `app/globals.css`
-- [ ] 6.4 Vérifier que `npx tsc --noEmit`, `npm run lint` et `npm run build` passent tous les trois sans erreur
+- [x] 6.1 Construire la page `/design-system` présentant tous les tokens de couleur, les trois rôles typographiques et chaque primitive dans ses états, sans lien depuis la navigation ; vérifier qu'elle s'affiche sur `http://localhost:3000/design-system`
+- [x] 6.2 Ouvrir `/design-system` et `neiro-maquette.html` côte à côte et corriger tout écart de couleur, de police, d'espacement ou de forme ; vérifier que chaque primitive est indiscernable de son équivalent dans la maquette
+- [x] 6.3 Vérifier par `grep` qu'aucune des dix valeurs hexadécimales de la palette n'apparaît en dur hors de `app/globals.css`
+- [x] 6.4 Vérifier que `npx tsc --noEmit`, `npm run lint` et `npm run build` passent tous les trois sans erreur
 - [ ] 6.5 Committer le socle en commits séparés et cohérents (amendement de la documentation, initialisation du projet, tokens, primitives, page de vérification), messages en français
