@@ -19,7 +19,7 @@ En construction. Le socle applicatif est **planifié mais pas encore implément�
 | 5 | Billets : compte à rebours, cache hors-ligne, rappels | À venir |
 | 6 | Social : amis, compagnons, RLS partagée | À venir |
 | 7 | Stats : classement, badges, records, récap annuel | À venir |
-| 8 | Import de billet par collage d'e-mail | À venir |
+| 8 | Import de billet par dépôt de PDF | À venir |
 | 9 | PWA finale : manifest, icônes, tests hors-ligne | À venir |
 
 ## Stack

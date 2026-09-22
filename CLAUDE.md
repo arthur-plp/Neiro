@@ -54,7 +54,7 @@ Ce fichier cadre tout travail de développement sur le projet **Neiro**, PWA per
 ## Qualité & validation
 
 - `tsc --noEmit` et le lint doivent passer sans erreur avant de considérer une étape terminée.
-- Pas de tests automatisés exigés en V1 vu l'échelle du projet, mais si tu écris de la logique non triviale (calcul de badges, de records, parsing d'e-mail de billet), un test unitaire rapide est bienvenu plutôt qu'une confiance aveugle dans le code.
+- Pas de tests automatisés exigés en V1 vu l'échelle du projet, mais si tu écris de la logique non triviale (calcul de badges, de records, extraction des champs d'un billet PDF), un test unitaire rapide est bienvenu plutôt qu'une confiance aveugle dans le code.
 - Avant de passer à l'étape suivante de la section 10, vérifie que l'étape en cours fonctionne réellement de bout en bout (pas seulement que le code compile) — idéalement en la parcourant comme le ferait l'utilisateur final.
 
 ## Git
@@ -68,4 +68,4 @@ Ce fichier cadre tout travail de développement sur le projet **Neiro**, PWA per
 - Ne pas ajouter de service payant ou de dépendance qui sortirait des paliers gratuits mentionnés dans le cahier des charges.
 - Ne pas réinventer le design vu dans `neiro-maquette.html` "en mieux" — le design est déjà validé, l'objectif est de le reproduire fidèlement en version fonctionnelle.
 - Ne pas implémenter la fonctionnalité "suivre des artistes + alertes near me" (explicitement repoussée en section 4 du cahier des charges, hors scope V1).
-- Ne pas complexifier l'OCR de billet au-delà du collage de texte d'e-mail pour la V1 (voir section 8 du cahier des charges) — la vraie reconnaissance photo est une itération future.
+- Ne pas complexifier l'import de billet au-delà de la lecture de la couche texte d'un PDF pour la V1 (voir section 8 du cahier des charges) — l'OCR, que ce soit sur un PDF image ou sur une photo de billet papier, est une itération future.

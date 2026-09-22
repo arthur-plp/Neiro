@@ -40,7 +40,7 @@ Application personnelle et gratuite (usage solo, un seul utilisateur principal +
 1. **Accueil** — fil des concerts récents (souches), stats rapides (nb concerts, artistes, cette année), accès recherche + frise chronologique
 2. **Classement** — toggle "Mes concerts" / "Entre amis" ; filtres tous temps / cette année / par genre ; classement avec podium visuel
 3. **Billets** — billets à venir (compte à rebours, badge hors-ligne, rappel, champ "note tes attentes") et billets passés
-4. **Ajouter un concert** — toggle "Remplir manuellement" / "Scanner un billet" (photo ou coller un e-mail → champs détectés automatiquement à confirmer) ; formulaire avec 4 notes séparées (son/ambiance/setlist/prix), tags compagnons, tags chansons jouées, notes libres
+4. **Ajouter un concert** — toggle "Remplir manuellement" / "Importer un billet" (dépôt du PDF du billet reçu par e-mail → champs détectés automatiquement à confirmer) ; formulaire avec 4 notes séparées (son/ambiance/setlist/prix), tags compagnons, tags chansons jouées, notes libres
 5. **Profil** — stats globales, bouton "Ton année en concerts" (récap façon Wrapped), graphique concerts/année, badges (débloqués/verrouillés), records insolites, villes visitées (heatmap), liste d'amis, réglages
 6. **Fiche concert détaillée** — notes par critère, section Avant/Après (attentes vs ressenti), setlist réelle jouée, compagnons présents (cliquables), souvenirs/photos
 7. **Profil d'un ami** — concerts vécus ensemble
@@ -51,7 +51,7 @@ Application personnelle et gratuite (usage solo, un seul utilisateur principal +
 ## 4. Fonctionnalités par thème
 
 **Journal & notation**
-- Ajout manuel ou par scan/import (photo de billet ou collage d'un texte d'e-mail de confirmation → extraction automatique artiste/salle/date/catégorie à valider)
+- Ajout manuel ou par import du billet en PDF (celui reçu par e-mail lors de l'achat → extraction automatique artiste/salle/date/catégorie à valider)
 - Notation multi-critères : son, ambiance, setlist, prix (au lieu d'une seule étoile globale)
 - Setlist réelle jouée ce soir-là (liste de titres)
 - Notes libres / souvenirs, photos
@@ -99,7 +99,8 @@ Concert
 
 Ticket (peut être fusionné avec Concert ou distinct si plusieurs billets par concert)
  - id, concertId, catégorie (fosse, carré or...), heure, rappelActif (bool)
- - sourceImport: "manuel" | "scan" | "email"
+ - sourceImport: "manuel" | "pdf"
+ - fichierBillet (référence Storage vers le PDF importé, null si saisie manuelle)
 
 Friendship
  - userId, friendId, statut: "en attente" | "ami"
@@ -117,7 +118,7 @@ Badge
 | Hébergement | **Vercel** | Déploiement du front, sous-domaine gratuit type `neiro.vercel.app`, déploiement automatique depuis GitHub |
 | Base de données | **Supabase (Postgres)** | 500 Mo gratuits ; adaptée car les données sont relationnelles (concerts ↔ compagnons ↔ amis ↔ badges) |
 | Authentification | **Supabase Auth** | Incluse, gère les comptes (email, magic link, ou OAuth) |
-| Stockage fichiers | **Supabase Storage** | 1 Go gratuit, pour les photos de concerts |
+| Stockage fichiers | **Supabase Storage** | 1 Go gratuit, pour les photos de concerts et les PDF de billets importés |
 | Permissions amis/données | **Row Level Security (Supabase)** | Point décisif du choix : permet de définir au niveau de la base elle-même qui voit quoi (ex. un ami ne voit que les concerts où il est tagué), plus sûr qu'une logique codée à la main |
 
 **Alternatives envisagées et écartées** :
@@ -133,7 +134,7 @@ Badge
 | **Tailwind CSS** | Styling, variables CSS de la section 2 déclinées en tokens Tailwind |
 | **Serwist** | Manifest PWA + service worker (successeur maintenu de `next-pwa`, qui n'est plus actif) ; stratégies de cache par route : cache-first pour billets/assets statiques, network-first pour le fil et le classement entre amis |
 | **TanStack Query** | Cache et synchronisation des requêtes Supabase ; affichage des données en cache pendant revalidation en fond |
-| **React Hook Form + Zod** | Formulaires (ajout concert, scan) et validation, schéma Zod partagé front/back |
+| **React Hook Form + Zod** | Formulaires (ajout concert, import de billet) et validation, schéma Zod partagé front/back |
 | **Zustand** | État UI local léger (toggles, écran actif) — pas de state manager lourd, l'essentiel des données vit déjà dans Supabase + TanStack Query |
 
 **Back-end**
@@ -141,7 +142,7 @@ Badge
 |---|---|
 | **Supabase Postgres + RLS** | Base de données et permissions (ex. un ami ne voit que les concerts où il est tagué), posées au niveau base plutôt qu'en code |
 | **Drizzle ORM** | Schéma typé + migrations SQL versionnées ; préféré à Prisma pour des cold starts plus légers sur Vercel/Edge |
-| **Supabase Edge Functions (Deno)** | Logique serveur : parsing du texte d'e-mail de billet, calcul des badges/records/récap annuel, envoi des Web Push de rappel |
+| **Supabase Edge Functions (Deno)** | Logique serveur : extraction des champs depuis le PDF du billet, calcul des badges/records/récap annuel, envoi des Web Push de rappel |
 | **Supabase Auth** | Magic link par e-mail en V1 (zéro mot de passe à gérer) ; OAuth Google ajoutable plus tard |
 
 **Choix écartés et pourquoi** : Prisma (cold starts plus lourds que Drizzle en environnement serverless/edge) ; `next-pwa` (non maintenu, remplacé par Serwist) ; Redux (état déjà porté par Supabase + TanStack Query, inutile d'alourdir avec un state manager global).
@@ -151,7 +152,8 @@ Badge
 - **Stockage** : les données persistent réellement dans Supabase (Postgres), contrairement à la maquette actuelle qui est purement visuelle et sans sauvegarde.
 - **Hors-ligne** : Supabase étant une base distante, prévoir une couche de cache local (IndexedDB côté navigateur, via le service worker) pour que les billets restent consultables sans réseau — ne pas dépendre uniquement d'un appel réseau à Supabase pour cet écran précis.
 - **PWA** : prévoir un manifest.json + service worker (via **Serwist**, comme acté en section 7) pour l'installation sur l'écran d'accueil et la stratégie de cache (cache-first pour les billets/assets statiques, network-first pour le fil d'actualité et le classement entre amis). Sous Next 16, l'intégration passe par le chemin Turbopack (`@serwist/turbopack`) et non par le wrapper webpack décrit dans la plupart des tutoriels.
-- **Scan de billet** : en V1 simple, se limiter au collage de texte d'e-mail (extraction de champs par mots-clés/regex) ; l'OCR sur photo de billet papier est une amélioration ultérieure plus complexe.
+- **Import de billet** : en V1, l'utilisateur dépose le **PDF du billet** reçu par e-mail. Le texte est extrait de la couche texte du PDF, puis les champs (artiste, salle, date, catégorie) sont détectés par mots-clés/regex et proposés à la confirmation — jamais enregistrés sans validation. Le PDF lui-même est conservé dans Supabase Storage : il devient le billet consultable dans l'écran Billets, y compris hors-ligne.
+  - Limite assumée : un PDF sans couche texte (billet scanné, image pure) ne donnera rien. Dans ce cas l'application bascule sur la saisie manuelle en le disant clairement, plutôt que de tenter un OCR. L'OCR — sur PDF image comme sur photo de billet papier — est une itération future.
 - **Notifications de rappel** : les rappels avant un billet nécessitent les Notifications Web Push (support variable selon navigateur/OS, à vérifier).
 
 ## 9. Ce qui est déjà prototypé (fichier `neiro-maquette.html`)
@@ -169,7 +171,7 @@ Ce document, accompagné de `neiro-maquette.html`, contient tout le nécessaire 
 5. Billets : stockage, compte à rebours, cache hors-ligne (Serwist), rappel (Web Push)
 6. Volet social : recherche de profils, demandes d'ami, tag de compagnons, RLS ajustée pour la visibilité partagée
 7. Stats & gamification : classement, badges, records, heatmap villes, récap annuel — calculs faisables côté Edge Function ou client selon le volume de données
-8. Scan de billet (V1 : collage de texte d'e-mail, extraction par regex/mots-clés)
+8. Import de billet (V1 : dépôt d'un PDF, extraction de sa couche texte puis détection des champs par regex/mots-clés, confirmation par l'utilisateur)
 9. PWA finale : manifest, icônes, installation, tests hors-ligne
 
 À chaque étape, se référer à `neiro-maquette.html` pour la fidélité visuelle (composants, espacements, couleurs, typographies) plutôt que de réinterpréter le design.
