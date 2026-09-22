@@ -43,4 +43,4 @@ Lève le risque R1 au seul moment où le repli est gratuit. Rien de ce groupe n'
 - [x] 6.2 Ouvrir `/design-system` et `neiro-maquette.html` côte à côte et corriger tout écart de couleur, de police, d'espacement ou de forme ; vérifier que chaque primitive est indiscernable de son équivalent dans la maquette
 - [x] 6.3 Vérifier par `grep` qu'aucune des dix valeurs hexadécimales de la palette n'apparaît en dur hors de `app/globals.css`
 - [x] 6.4 Vérifier que `npx tsc --noEmit`, `npm run lint` et `npm run build` passent tous les trois sans erreur
-- [ ] 6.5 Committer le socle en commits séparés et cohérents (amendement de la documentation, initialisation du projet, tokens, primitives, page de vérification), messages en français
+- [x] 6.5 Committer le socle en commits séparés et cohérents (amendement de la documentation, initialisation du projet, tokens, primitives, page de vérification), messages en français
