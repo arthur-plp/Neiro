@@ -1,5 +1,6 @@
 import { InteractivePreview } from "@/app/design-system/interactive-preview";
 import { PalettePreview } from "@/app/design-system/palette-preview";
+import { EmptyState } from "@/components/ui/empty-state";
 import { GenreTag } from "@/components/concert/genre-tag";
 import { TicketStub } from "@/components/concert/ticket-stub";
 import { PrimaryButton } from "@/components/ui/primary-button";
@@ -92,6 +93,22 @@ export default function DesignSystemPage() {
 
       <Section titre="Bouton principal">
         <PrimaryButton>Enregistrer le concert</PrimaryButton>
+      </Section>
+
+      <Section titre="État vide">
+        <EmptyState
+          titre="Aucun concert pour l'instant"
+          explication="Ton fil se remplira à mesure que tu noteras les concerts que tu vois."
+          action={{ href: "/ajouter", label: "Ajouter mon premier concert" }}
+        />
+        <p className="text-text-muted mt-4 text-[11px]">
+          Sans action, quand il n&apos;y a rien à proposer :
+        </p>
+        <EmptyState
+          className="mt-2"
+          titre="Le volet social arrive plus tard"
+          explication="Amitiés et compagnons de concert font l'objet d'une étape ultérieure."
+        />
       </Section>
 
       <Section titre="Souches de billet">
