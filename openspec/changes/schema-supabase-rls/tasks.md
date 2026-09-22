@@ -43,4 +43,4 @@
 
 - [x] 7.1 Vérifier que `npx tsc --noEmit`, `npm run lint` et `npm run build` passent tous les trois sans erreur
 - [x] 7.2 Rejouer toutes les migrations depuis une base vierge et vérifier que le schéma obtenu et les politiques sont identiques, sans aucune étape manuelle
-- [ ] 7.3 Committer en commits séparés et cohérents (dépendances, schéma, trigger, politiques, clients), messages en français
+- [x] 7.3 Committer en commits séparés et cohérents (dépendances, schéma, trigger, politiques, clients), messages en français
