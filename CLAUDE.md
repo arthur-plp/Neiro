@@ -17,7 +17,7 @@ Ce fichier cadre tout travail de développement sur le projet **Neiro**, PWA per
 
 ## Stack (voir section 7 du cahier des charges pour le détail)
 
-- Next.js 15 (App Router) + TypeScript strict
+- Next.js 16 (App Router) + TypeScript strict
 - Tailwind CSS
 - Supabase (Postgres, Auth, Storage, Edge Functions)
 - Drizzle ORM

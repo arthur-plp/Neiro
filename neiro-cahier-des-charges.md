@@ -129,7 +129,7 @@ Badge
 **Front-end**
 | Techno | Rôle |
 |---|---|
-| **Next.js 15 (App Router) + TypeScript** | Framework principal, SSR/SSG natif sur Vercel |
+| **Next.js 16 (App Router) + TypeScript** | Framework principal, SSR/SSG natif sur Vercel. Ce document retenait initialement la version 15 ; la 16 est stable depuis octobre 2025 et ne change rien aux mécanismes décrits ici, alors que démarrer sur la 15 aurait programmé une migration immédiate. |
 | **Tailwind CSS** | Styling, variables CSS de la section 2 déclinées en tokens Tailwind |
 | **Serwist** | Manifest PWA + service worker (successeur maintenu de `next-pwa`, qui n'est plus actif) ; stratégies de cache par route : cache-first pour billets/assets statiques, network-first pour le fil et le classement entre amis |
 | **TanStack Query** | Cache et synchronisation des requêtes Supabase ; affichage des données en cache pendant revalidation en fond |
@@ -150,7 +150,7 @@ Badge
 
 - **Stockage** : les données persistent réellement dans Supabase (Postgres), contrairement à la maquette actuelle qui est purement visuelle et sans sauvegarde.
 - **Hors-ligne** : Supabase étant une base distante, prévoir une couche de cache local (IndexedDB côté navigateur, via le service worker) pour que les billets restent consultables sans réseau — ne pas dépendre uniquement d'un appel réseau à Supabase pour cet écran précis.
-- **PWA** : prévoir un manifest.json + service worker (ex. via `next-pwa` si le front est en Next.js) pour l'installation sur l'écran d'accueil et la stratégie de cache (cache-first pour les billets/assets statiques, network-first pour le fil d'actualité et le classement entre amis).
+- **PWA** : prévoir un manifest.json + service worker (via **Serwist**, comme acté en section 7) pour l'installation sur l'écran d'accueil et la stratégie de cache (cache-first pour les billets/assets statiques, network-first pour le fil d'actualité et le classement entre amis). Sous Next 16, l'intégration passe par le chemin Turbopack (`@serwist/turbopack`) et non par le wrapper webpack décrit dans la plupart des tutoriels.
 - **Scan de billet** : en V1 simple, se limiter au collage de texte d'e-mail (extraction de champs par mots-clés/regex) ; l'OCR sur photo de billet papier est une amélioration ultérieure plus complexe.
 - **Notifications de rappel** : les rappels avant un billet nécessitent les Notifications Web Push (support variable selon navigateur/OS, à vérifier).
 

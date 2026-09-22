@@ -2,9 +2,9 @@
 
 ## 1. Amendement de la documentation
 
-- [ ] 1.1 Mettre à jour la section 7 de `neiro-cahier-des-charges.md` pour acter Next.js 16 au lieu de 15 (décision D1), en notant la raison en une phrase ; vérifier qu'aucune autre mention de « Next.js 15 » ne subsiste dans le fichier (`grep -n "Next.js 15" neiro-cahier-des-charges.md` ne retourne rien)
-- [ ] 1.2 Mettre à jour la ligne correspondante de `CLAUDE.md` ; même vérification par `grep`
-- [ ] 1.3 Corriger dans la section 8 du cahier des charges la mention résiduelle de `next-pwa`, contredite par la section 7 qui retient Serwist ; vérifier par `grep -n "next-pwa" neiro-cahier-des-charges.md` que seule subsiste la mention historique expliquant pourquoi il a été écarté
+- [x] 1.1 Mettre à jour la section 7 de `neiro-cahier-des-charges.md` pour acter Next.js 16 au lieu de 15 (décision D1), en notant la raison en une phrase ; vérifier qu'aucune autre mention de « Next.js 15 » ne subsiste dans le fichier (`grep -n "Next.js 15" neiro-cahier-des-charges.md` ne retourne rien)
+- [x] 1.2 Mettre à jour la ligne correspondante de `CLAUDE.md` ; même vérification par `grep`
+- [x] 1.3 Corriger dans la section 8 du cahier des charges la mention résiduelle de `next-pwa`, contredite par la section 7 qui retient Serwist ; vérifier par `grep -n "next-pwa" neiro-cahier-des-charges.md` que seule subsiste la mention historique expliquant pourquoi il a été écarté
 
 ## 2. Initialisation du projet
 
