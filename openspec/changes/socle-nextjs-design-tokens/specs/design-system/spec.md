@@ -65,7 +65,9 @@ Ce fond SHALL couvrir toute la hauteur de la fenêtre, y compris lorsque le cont
 
 ### Requirement: Primitive souche de billet
 
-Le système SHALL fournir une primitive « souche de billet » réutilisable, qui présente un concert avec : une bande de couleur verticale à gauche (couleur associée au genre), une encoche ronde sur chaque bord latéral, une ligne pointillée verticale de déchirure, le nom de l'artiste en police display, la salle et la ville en texte atténué, et une zone de métadonnées (tag de genre, date en mono, note).
+Le système SHALL fournir une primitive « souche de billet » réutilisable, qui présente un concert avec : une bande de couleur verticale à gauche, une encoche ronde sur chaque bord latéral, une ligne pointillée verticale de déchirure, le nom de l'artiste en police display, la salle et la ville en texte atténué, et une zone de métadonnées (tag de genre, date en mono, note).
+
+La couleur d'accent de la souche SHALL être fournie par l'appelant parmi les quatre accents de la palette. La primitive MUST NOT dériver cette couleur d'une autre donnée du concert, le genre compris. Au sein d'une même souche, la bande latérale et le tag de genre SHALL utiliser cette même couleur.
 
 Les souches présentées en liste SHALL recevoir une légère rotation alternée (environ un demi-degré, dans un sens puis dans l'autre) afin de produire l'effet « punaisé sur un mur » de la maquette.
 
@@ -73,8 +75,13 @@ Une souche SHALL rester lisible quand le nom de l'artiste ou de la salle est tro
 
 #### Scenario: Rendu d'une souche
 
-- **WHEN** une souche de billet est rendue avec un artiste, une salle, une date, un genre et une note
-- **THEN** les encoches latérales, la ligne pointillée et la bande de couleur du genre sont visibles, et chaque information s'affiche dans le rôle typographique prévu
+- **WHEN** une souche de billet est rendue avec un artiste, une salle, une date, un genre, une note et une couleur d'accent
+- **THEN** les encoches latérales, la ligne pointillée et la bande de couleur sont visibles, la bande et le tag de genre portent la couleur d'accent demandée, et chaque information s'affiche dans le rôle typographique prévu
+
+#### Scenario: Deux souches de même genre et de couleurs différentes
+
+- **WHEN** deux souches partageant le même genre reçoivent deux couleurs d'accent différentes
+- **THEN** chacune affiche la couleur qu'elle a reçue, sans qu'aucune règle interne ne les aligne sur une couleur commune
 
 #### Scenario: Rotations alternées en liste
 

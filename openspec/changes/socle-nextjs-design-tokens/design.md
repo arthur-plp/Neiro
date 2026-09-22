@@ -26,7 +26,7 @@ Ce change est aussi le premier de la section 10 : tout ce qui suit s'appuie dess
 
 - Aucune donnée, aucun état, aucun appel réseau — pas de Supabase, pas de TanStack Query, pas de Zustand dans ce change. Ces dépendances arrivent quand un écran réel en a besoin.
 - Aucune navigation entre écrans de produit : la barre de navigation basse et le squelette d'écrans relèvent de l'étape 3.
-- Aucun service worker ni manifest PWA : étapes 5 et 9.
+- Aucun service worker ni manifest PWA livrés : étapes 5 et 9. La vérification Serwist décrite en R1 est un spike jetable, retiré avant la fin du change — elle valide une décision de cette étape, elle ne livre rien de l'étape 5.
 - Aucun composant métier (carte de concert connectée, formulaire d'ajout) : seulement des primitives sans logique.
 
 ## Decisions
@@ -81,24 +81,26 @@ Souche de billet, puce de statistique, tag de genre et bouton principal ne porte
 
 Rationale : conforme à la convention posée dans `CLAUDE.md`, et cela garde le JavaScript envoyé au navigateur minimal — ce qui comptera pour une PWA consultée sur mobile.
 
-### D7 — Correspondance genre → couleur d'accent, explicite et avec repli
+### D7 — La couleur d'accent est décorative et reçue en prop, pas dérivée du genre
 
-La maquette colore les souches et les tags de genre, mais sans correspondance cohérente (« Électro » y apparaît une fois en teal, « Électro-pop » en violet) : la variété y est décorative. Le formulaire d'ajout propose lui une liste fermée : Électro, Rock, Pop, Indé, Rap, + Autre.
+La maquette a d'abord donné l'impression que la couleur encodait le genre : dans une souche, la bande latérale et le tag de genre s'accordent systématiquement. Le dépouillement complet du fichier dit autre chose.
 
-**Décision : une table explicite pour les cinq genres connus, avec repli déterministe pour tout autre valeur.**
+| Artiste | Dans le fil (`.stub`) | Dans la frise (`.tl-dot`) |
+|---|---|---|
+| Nova Wave | violet | violet, puis **teal** à sa seconde occurrence |
+| Argile | teal | **amber** |
+| Volt | amber | **violet** |
+| Les Archives | hot | hot |
 
-| Genre | Accent |
-|---|---|
-| Rock | `accent-hot` |
-| Électro | `accent-violet` |
-| Pop | `accent-amber` |
-| Indé | `accent-teal` |
-| Rap | `accent-violet` |
-| autre / inconnu | choisi parmi les quatre accents par hachage stable du libellé |
+La couleur n'est donc stable ni par genre, ni par artiste, ni même par concert d'un écran à l'autre. C'est de la variété décorative, posée à la main écran par écran pour que le mur de souches respire. La seule invariance réelle est interne à une carte — la bande et le tag s'accordent — c'est-à-dire la cohérence d'un composant, pas un encodage.
 
-Rationale : la palette ne compte que quatre accents pour six genres, donc une réutilisation est inévitable — elle est sans conséquence puisque le tag porte toujours son libellé en clair. Le repli par hachage garantit qu'un genre saisi librement reçoit toujours la même couleur d'un écran à l'autre, sans avoir à maintenir la table.
+**Décision : la souche reçoit sa couleur d'accent en prop. Ce change n'introduit aucune règle de dérivation, donc pas de table genre → couleur ni de fichier `lib/genre-colors.ts`.** Le tag de genre d'une souche utilise la même couleur que sa bande, ce qui reproduit la seule invariance observée.
 
-Cette table est une hypothèse de travail, à confirmer à l'étape 4 quand la liste des genres sera arrêtée pour de bon.
+Rationale : une table genre → couleur inventerait une sémantique que le design n'a jamais eue, et l'imposerait à tous les écrans suivants. Le vocabulaire visuel de cette étape est « une souche a une couleur d'accent » ; **laquelle** revient à un concert donné est une règle produit qui appartient à l'étape 4, avec le modèle de données. La décision est donc reportée, pas esquivée.
+
+Alternative écartée : hacher sur le nom de l'artiste pour donner à chaque artiste sa couleur d'identité. Séduisant, mais c'est inventer un autre sens tout aussi absent de la maquette — laquelle donne justement deux couleurs différentes aux deux concerts de Nova Wave.
+
+Recommandation pour l'étape 4, à trancher là-bas : un hachage stable sur l'**identifiant du concert**. C'est la règle minimale qui garantit la seule propriété qu'un utilisateur puisse remarquer — un même concert garde sa couleur du fil à la frise — et elle reproduit au passage le cas Nova Wave.
 
 ### D8 — Arborescence
 
@@ -112,7 +114,6 @@ components/
   ui/                   # primitives sans métier : chip, segmented, stat-chip, button…
   concert/              # primitives orientées domaine : ticket-stub, genre-tag
 lib/
-  genre-colors.ts       # table de D7
   cn.ts                 # concaténation de classes conditionnelles
 ```
 
@@ -130,7 +131,16 @@ Pour les classes conditionnelles, une fonction `cn` d'une ligne suffit ; `clsx` 
 
 ## Risks / Trade-offs
 
-**R1 — Serwist doit fonctionner avec Next 16 à l'étape 5.** L'exigence hors-ligne n'est pas négociable, et D1 introduit une combinaison que le cahier des charges n'avait pas anticipée. → Mitigation : la documentation Serwist annonce le support de Next 15 et au-delà à partir de Serwist 10, et des intégrations Next 16 + Serwist sont documentées publiquement. Le risque est donc faible mais réel. Il sera levé au début de l'étape 5 par un service worker minimal mis en place avant tout le reste de l'étape ; en cas de blocage, le repli est de figer Next sur 15.5.x, ce qui reste peu coûteux tant qu'aucune API propre à 16 n'est utilisée — ce que ce change respecte.
+**R1 — L'intégration Serwist sous Next 16 passe par Turbopack et touche le layout racine.** L'exigence hors-ligne n'est pas négociable, et D1 introduit une combinaison que le cahier des charges n'avait pas anticipée. Vérification faite, la question n'est pas « est-ce que ça marche » mais « sous quelle forme » :
+
+- Next 16 utilise Turbopack par défaut en développement **comme en build**, donc le wrapper `withSerwist` webpack décrit par la plupart des tutoriels ne s'applique pas.
+- Serwist fournit un chemin Turbopack dédié et **publié en stable** (`@serwist/turbopack@9.5.12`, pas seulement en preview) : un `withSerwist` issu de ce package, `esbuild` en peer, un `app/sw.ts`, un route handler `app/serwist/[path]/route.ts`, et un `SerwistProvider` **dans `app/layout.tsx`**.
+
+Ce dernier point est ce qui rend le risque non orthogonal à ce change : l'intégration s'insère dans le fichier que cette étape crée.
+
+→ Mitigation : **une vérification jetable intercalée juste après l'initialisation du projet** (groupe de tâches 3), avant d'écrire les tokens et les primitives — Serwist minimal câblé, build lancé, service worker émis constaté, puis spike retiré. C'est le seul moment où se tromper ne coûte rien.
+
+Le repli en cas d'échec reste de figer Next sur 15.5.x pour retrouver le chemin webpack éprouvé. **Ce repli n'est bon marché que maintenant** : à l'étape 5, il s'agirait de rétrograder le framework d'une application qui tourne, avec quatre étapes de code par-dessus. C'est précisément pourquoi la vérification est avancée ici plutôt que reportée.
 
 **R2 — Une page de vérification qui se périme.** `/design-system` n'apporte de valeur que si elle est tenue à jour quand une primitive évolue. → Mitigation : elle reste volontairement minimale et vit dans le même dépôt ; toute étape ultérieure qui ajoute une primitive l'y ajoute aussi. Si elle décroche malgré tout, elle sera supprimée plutôt que laissée trompeuse.
 
